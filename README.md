@@ -30,7 +30,7 @@ Useful links:
 - List of PostCSS plugins: [https://github.com/postcss/postcss](https://github.com/postcss/postcss)
 
 Useful software:
-- Hub ([project link](https://hub.github.com/)), `brew install hub`
+- Hub ([project link](https://hub.github.com/)), `brew install hub`, `hub browse`
 
 Useful commands:
 - Serve development build, `cd ./src; server 2222`
