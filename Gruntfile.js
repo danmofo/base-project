@@ -1,43 +1,54 @@
 /**
- * @author: danielmoffat
+ *  See README.md for more explanation.
+ *
+ *  @author: danielmoffat
  */
 
-(function() {
-	return require('fs').readdirSync(require('./grunt_config').load().get('baseDirectory')).filter(function(directory) {
-		return FILE_BLACKLIST.indexOf(directory) === -1;
-	}).filter(function(directory) {
-		return directory.indexOf('_Assets') > -1;
-	});
-});
-
-var DEFAULT_BASE_DIRECTORY = '/var/everyclick/development';
-
-// File types / extensions we want to ignore
-var FILE_BLACKLIST = [
-	'.DS_Store',
-	'.metadata',
-	'.recommenders'
-];
-
-var MESSAGES = {
-	selectWorkingDirectory: 'Select the working directory (where the project lives)'
-};
+var config = require('./grunt_config').load();
+var CONSTANTS = require('./constants');
 
 module.exports = function(grunt) {
 
+  // Load tasks
 	grunt.loadNpmTasks('grunt-prompt');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-postcss');
 
+  // Set configuration for each task
 	grunt.initConfig({
+		baseDirectory: config.get('baseDirectory'),
+		projectDirectory: config.get('projectDirectory'),
+    distDirectory: './prod',
+    postcss: {
+      // Global options
+      options: {
+        map: true,
+        processors: [
+          require('pixrem')(),
+          require('autoprefixer')({
+            browsers: 'last 2 versions'
+          }),
+          require('cssnano')()
+        ]
+      },
+      // Tasks
+      dev: {
+        src: grunt.template.process('<%= projectDirectory %>src/styles/css/*.css')
+      },
+      prod: {
+        src: grunt.template.process('<%= projectDirectory %>prod/styles/css/*.css', {data: config.data})
+      }
+    },
 		less: {
 			dev: {
 				files: [
 					{
 						expand: true,
-						cwd: 'src/styles/less/',
+						cwd: grunt.template.process('<%= projectDirectory %>src/styles/less/', {data: config.data}),
 						src: ['*.less', '!_*.less'],
-						dest: 'src/styles/css/',
+						dest: './src/styles/css/',
 						ext: '.css'
 					}
 				]
@@ -45,8 +56,11 @@ module.exports = function(grunt) {
 		},
 		watch: {
 			dev: {
-				files: './src/styles/less/**/**/*.less',
-				tasks: ['less:dev']
+				files: './src/styles/less/**/*.less',
+				tasks: [
+          'less:dev',
+          'postcss:dev'
+        ]
 			}
 		},
 		prompt: {
@@ -56,7 +70,7 @@ module.exports = function(grunt) {
 						{
 							config: 'config.selections',
 							type: 'list',
-							message: MESSAGES.selectWorkingDirectory,
+							message: '',
 							default: 'test',
 							choices: ['']
 						}
@@ -70,8 +84,7 @@ module.exports = function(grunt) {
 	 * 	Task registration
 	 */
 
-	// Register default task
-	grunt.registerTask('default', ['setup']);
+	grunt.registerTask('default', ['dev']);
 
 	// Setup tasks, these must be ran before you can work on anything
 	grunt.registerTask('setup', [
@@ -81,13 +94,21 @@ module.exports = function(grunt) {
 	// Development tasks, these are for when you're working on a project
 	grunt.registerTask('dev', [
 		'setup',
+		'createCss',
 		'watch:dev'
 	]);
+
 
 	// Production tasks, these are for when you want to create a production-ready build
 	grunt.registerTask('build', [
 		'setup'
 	]);
+
+  // Convenience task groups
+  grunt.registerTask('createCss', [
+    'less:dev',
+    'postcss:dev'
+  ]);
 
 	// Make sure the configuration has some crucial values set!
 	grunt.registerTask('validateConfig', function() {
@@ -108,11 +129,10 @@ module.exports = function(grunt) {
 		// Add missing keys
 		if(!ok) {
 			config.set('baseDirectory', '.');
-			config.set('projectDirectory', './src');
+			config.set('projectDirectory', './');
 			config.save();
 		}
 
 		grunt.log.writeln(config.prettyPrint());
-
 	});
 };

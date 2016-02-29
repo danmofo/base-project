@@ -1,3 +1,9 @@
+#
+# Creates a dummy project structure inside the src/ directory
+#
+# @author danielmoffat
+#
+
 # Create folders
 mkdir -p 'src/styles/less/components'
 mkdir -p 'src/styles/css'
