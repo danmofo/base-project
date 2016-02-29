@@ -55,14 +55,15 @@ function prettifyJson(obj, spaces) {
  *
  * @return {void} 
  */
-function load() {
+function load(configLocation) {
+	var configLocation = configLocation || DEFAULT_CONFIG_LOCATION;
 
-	if(grunt.file.exists(DEFAULT_CONFIG_LOCATION)) {
+	if(grunt.file.exists(configLocation)) {
 		try {
-			this.localConfig = grunt.file.readJSON(DEFAULT_CONFIG_LOCATION);	
+			this.localConfig = grunt.file.readJSON(configLocation);	
 		} catch(exception) {
 			grunt.log.writeln('Error parsing existing config, deleting...');
-			grunt.file.delete(DEFAULT_CONFIG_LOCATION);
+			grunt.file.delete(configLocation);
 			createEmptyConfig();
 		}
 	} else {
@@ -94,9 +95,10 @@ function merge(a, b) {
  * Creates an empty configuration file at DEFAULT_CONFIG_LOCATION.
  * @return {void}
  */
-function createEmptyConfig() {
-	grunt.log.writeln('Created an empty config at ' + DEFAULT_CONFIG_LOCATION);
-	grunt.file.write(DEFAULT_CONFIG_LOCATION, JSON.stringify({}));
+function createEmptyConfig(configLocation) {
+	var configLocation = configLocation || DEFAULT_CONFIG_LOCATION;
+	grunt.log.writeln('Created an empty config at ' + configLocation);
+	grunt.file.write(configLocation, JSON.stringify({}));
 	return this;
 }
 

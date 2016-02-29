@@ -80,12 +80,13 @@ module.exports = function(grunt) {
 
 	// Development tasks, these are for when you're working on a project
 	grunt.registerTask('dev', [
-		'validateConfig'
+		'setup',
+		'watch:dev'
 	]);
 
 	// Production tasks, these are for when you want to create a production-ready build
 	grunt.registerTask('build', [
-		'validateConfig'
+		'setup'
 	]);
 
 	// Make sure the configuration has some crucial values set!
