@@ -9,26 +9,26 @@ var CONSTANTS = require('./constants');
 
 module.exports = function(grunt) {
 
-  // Load tasks
+  // Load tasks, todo: replace
 	grunt.loadNpmTasks('grunt-prompt');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-postcss');
+  grunt.loadNpmTasks('grunt-concurrent');
 
-  // Set configuration for each task
 	grunt.initConfig({
 		baseDirectory: config.get('baseDirectory'),
 		projectDirectory: config.get('projectDirectory'),
     distDirectory: './prod',
     postcss: {
-      // Global options
+      // todo: transform less source map to this, so we can retain .less file names/  numbers
       options: {
         map: true,
         processors: [
           require('pixrem')(),
           require('autoprefixer')({
-            browsers: 'last 2 versions'
+            browsers: 'last 5 versions'
           }),
           require('cssnano')()
         ]
@@ -41,27 +41,41 @@ module.exports = function(grunt) {
         src: grunt.template.process('<%= projectDirectory %>prod/styles/css/*.css', {data: config.data})
       }
     },
+    browserify: {
+      dev: {
+        files: [{
+          './src/scripts/bundles/main.js': './src/scripts/main.js'
+        }]
+      }
+    },
 		less: {
 			dev: {
-				files: [
-					{
+        options: {
+
+        },
+				files: [{
 						expand: true,
 						cwd: grunt.template.process('<%= projectDirectory %>src/styles/less/', {data: config.data}),
 						src: ['*.less', '!_*.less'],
 						dest: './src/styles/css/',
 						ext: '.css'
-					}
-				]
+				}]
 			}
 		},
 		watch: {
-			dev: {
-				files: './src/styles/less/**/*.less',
+			devStyles: {
+				files: 'src/styles/less/**/*.less',
 				tasks: [
           'less:dev',
           'postcss:dev'
         ]
-			}
+			},
+      devScripts: {
+        files: ['src/scripts/**/**', '!src/scripts/bundles/**/**'],
+        tasks: [
+          'browserify:dev'
+        ]
+      }
 		},
 		prompt: {
 			setup: {
@@ -77,7 +91,15 @@ module.exports = function(grunt) {
 					]
 				}
 			}
-		}
+		},
+    concurrent: {
+      watch: {
+        tasks: ['watch:devStyles', 'watch:devScripts'],
+        options: {
+          logConcurrentOutput: true
+        }
+      }
+    },
 	});
 
 	/**
@@ -95,7 +117,8 @@ module.exports = function(grunt) {
 	grunt.registerTask('dev', [
 		'setup',
 		'createCss',
-		'watch:dev'
+    'createScripts',
+    'concurrent:watch'
 	]);
 
 
@@ -108,6 +131,10 @@ module.exports = function(grunt) {
   grunt.registerTask('createCss', [
     'less:dev',
     'postcss:dev'
+  ]);
+
+  grunt.registerTask('createScripts', [
+    'browserify:dev'
   ]);
 
 	// Make sure the configuration has some crucial values set!
@@ -133,6 +160,7 @@ module.exports = function(grunt) {
 			config.save();
 		}
 
-		grunt.log.writeln(config.prettyPrint());
+    config.save();
+
 	});
 };

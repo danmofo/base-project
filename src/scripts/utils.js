@@ -1,19 +1,22 @@
 // @author: danielmoffat
-// 
+//
 // Some extremely useful utlities.
 
-(function () {
-	
-	'use strict';
+'use strict';
 
-	var utils = {
-		add: add
-	};
+var utils = {
+	add: add,
+  subtract: subtract
+};
 
-	function add(a, b) {
-		return a + b;
-	}
+function add(a, b) {
+	return a + b;
+}
 
-	console.log(utils.add(1, 1));
+function subtract(a, b) {
+  return a - b;
+}
 
-})();
+
+
+module.exports = utils;

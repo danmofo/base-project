@@ -7,7 +7,7 @@
 # Create folders
 mkdir -p 'src/styles/less/components'
 mkdir -p 'src/styles/css'
-mkdir -p 'src/scripts/'
+mkdir -p 'src/scripts/bundles'
 mkdir -p 'src/velocity/template'
 
 # Create files
