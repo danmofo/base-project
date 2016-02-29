@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Template</title>
+</head>
+<body>
+	<h1>This is the template!</h1>
+	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur delectus, odio aperiam libero itaque enim odit modi ab. Omnis quis doloremque, quos atque nam iste quam et odio eaque officiis.</p>
+	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem vel ratione, repellat, iste nesciunt suscipit eligendi dignissimos tempora ea commodi natus aut aperiam doloremque ab. Dignissimos explicabo alias asperiores! Eaque.</p>
+	<div class="box box--brand">
+		<p>Branded box</p>
+	</div>
+</body>
+</html>

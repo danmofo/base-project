@@ -9,6 +9,8 @@ var utils = {
   subtract: subtract
 };
 
+module.exports = utils;
+
 function add(a, b) {
 	return a + b;
 }
@@ -16,7 +18,3 @@ function add(a, b) {
 function subtract(a, b) {
   return a - b;
 }
-
-
-
-module.exports = utils;

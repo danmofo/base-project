@@ -4,63 +4,123 @@
  *  @author: danielmoffat
  */
 
-var config = require('./grunt_config').load();
 var CONSTANTS = require('./constants');
 
 module.exports = function(grunt) {
 
-  // Load tasks, todo: replace
+  // Load tasks, todo: replace with a 1 liner that loads everything
 	grunt.loadNpmTasks('grunt-prompt');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-postcss');
   grunt.loadNpmTasks('grunt-concurrent');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-filerev');
+  grunt.loadNpmTasks('grunt-userev');
+  grunt.loadNpmTasks('grunt-pageres');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
 	grunt.initConfig({
-		baseDirectory: config.get('baseDirectory'),
-		projectDirectory: config.get('projectDirectory'),
+		baseDirectory: '.',
+		projectDirectory: './',
     distDirectory: './prod',
+    filerev: {
+      prod: {
+        src: ['prod/styles/css/*.css', 'prod/scripts/bundles/*.js']
+      }
+    },
+    userev: {
+      prod: {
+        src: 'prod/velocity/index.html'
+      }
+    },
+    clean: {
+      prod: ['prod/']
+    },
     postcss: {
-      // todo: transform less source map to this, so we can retain .less file names/  numbers
-      options: {
-        map: true,
-        processors: [
-          require('pixrem')(),
-          require('autoprefixer')({
-            browsers: 'last 5 versions'
-          }),
-          require('cssnano')()
-        ]
-      },
-      // Tasks
       dev: {
-        src: grunt.template.process('<%= projectDirectory %>src/styles/css/*.css')
+        options: {
+          map: true,
+          processors: [
+            require('pixrem')(),
+            require('autoprefixer')({
+              browsers: 'last 5 versions'
+            }),
+            require('cssnano')({
+              discardComments: {
+                removeAll: true
+              }
+            })
+          ]
+        },
+        src: 'src/styles/css/*.css'
       },
       prod: {
-        src: grunt.template.process('<%= projectDirectory %>prod/styles/css/*.css', {data: config.data})
+        options: {
+          map: false,
+          processors: [
+            require('pixrem')(),
+            require('autoprefixer')({
+              browsers: 'last 5 versions'
+            }),
+            require('cssnano')({
+
+            })
+          ]
+        },
+        src: 'prod/styles/css/*.css'
       }
     },
     browserify: {
       dev: {
+        options: {
+          browserifyOptions: {
+            debug: true
+          }
+        },
         files: [{
-          './src/scripts/bundles/main.js': './src/scripts/main.js'
+          expand: true,
+          cwd: 'src/scripts/',
+          src: ['*.js', '!_*.js'],
+          dest: 'src/scripts/bundles/',
+          ext: '-bundle.js'
+        }]
+      },
+      prod: {
+        options: {},
+        files: [{
+          expand: true,
+          cwd: 'src/scripts/',
+          src: ['*.js', '!_*.js'],
+          dest: 'prod/scripts/bundles/',
+          ext: '-bundle.js'
         }]
       }
     },
 		less: {
 			dev: {
         options: {
-
+          sourceMap: true
         },
 				files: [{
 						expand: true,
-						cwd: grunt.template.process('<%= projectDirectory %>src/styles/less/', {data: config.data}),
+						cwd: 'src/styles/less/',
 						src: ['*.less', '!_*.less'],
 						dest: './src/styles/css/',
 						ext: '.css'
 				}]
-			}
+			},
+      prod: {
+        files: [{
+            expand: true,
+            cwd: 'src/styles/less/',
+            src: ['*.less', '!_*.less'],
+            dest: './prod/styles/css/',
+            ext: '.css'
+        }]
+      }
 		},
 		watch: {
 			devStyles: {
@@ -77,21 +137,6 @@ module.exports = function(grunt) {
         ]
       }
 		},
-		prompt: {
-			setup: {
-				options: {
-					questions: [
-						{
-							config: 'config.selections',
-							type: 'list',
-							message: '',
-							default: 'test',
-							choices: ['']
-						}
-					]
-				}
-			}
-		},
     concurrent: {
       watch: {
         tasks: ['watch:devStyles', 'watch:devScripts'],
@@ -100,6 +145,31 @@ module.exports = function(grunt) {
         }
       }
     },
+    uglify: {
+      prod: {
+        files: [{
+            expand: true,
+            cwd: 'prod/scripts/bundles/',
+            src: '*.js',
+            dest: 'prod/scripts/bundles/',
+            ext: '.js'
+        }]
+      }
+    },
+    // Copy all files NOT copied by other tasks, if you copy stuff which is already copied
+    // by another task bad things will happen
+    copy: {
+      prod: {
+        files: [{
+          expand: true,
+          cwd: 'src/',
+          src: [
+            'velocity/**/**'
+          ],
+          dest: 'prod/'
+        }]
+      }
+    }
 	});
 
 	/**
@@ -124,7 +194,16 @@ module.exports = function(grunt) {
 
 	// Production tasks, these are for when you want to create a production-ready build
 	grunt.registerTask('build', [
-		'setup'
+		'setup',
+    'clean:prod',
+    'copy:prod',
+    'less:prod',
+    'postcss:prod',
+    'browserify:prod',
+    'uglify:prod',
+    'filerev:prod',
+    'userev:prod',
+    'state'
 	]);
 
   // Convenience task groups
@@ -136,6 +215,12 @@ module.exports = function(grunt) {
   grunt.registerTask('createScripts', [
     'browserify:dev'
   ]);
+
+  grunt.registerTask('state', function() {
+    var config = require('./grunt_config').load();
+    grunt.log.writeln(config.prettyPrint())
+    grunt.log.writeln(config.get('filerev.summary'))
+  });
 
 	// Make sure the configuration has some crucial values set!
 	grunt.registerTask('validateConfig', function() {

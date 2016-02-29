@@ -23,6 +23,8 @@ To add:
 - JS linter
 - Look for useful `postcss` plugins
 - Seperate config into several files
+- Clean up grunt config
+- conditional postcss configuration
 
 Todo:
 ---
@@ -33,6 +35,7 @@ Available tasks:
 ---
 
 - `dev` develop a project
+  -
 - `prod` produce a fully-optimized project build
 - `setup` setup your environment for development
 - `util` utility task for running one off optimizations (e.g. image compression, page screenshots, etc.)
