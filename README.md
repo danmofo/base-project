@@ -1,7 +1,7 @@
 Base Grunt tasks
 ===
 
-[[https://github.com/danmofo/base-project/blob/master/diagram.jpg|alt=Diagram]]
+![Alt text](diagram.jpg?raw=true "title")
 
 This `Gruntfile` is designed to work for people who aren't comfortable configuring this stuff manually themselves, generally
 as long as you keep to the structure, it will work fine.
