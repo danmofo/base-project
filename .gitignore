@@ -2,6 +2,7 @@
 # Created by https://www.gitignore.io/api/osx,java,eclipse,node,vagrant,svn,bower,maven,sublimetext
 
 .grunt-temp/
+prod/
 
 ### OSX ###
 .DS_Store

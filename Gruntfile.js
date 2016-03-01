@@ -28,12 +28,20 @@ module.exports = function(grunt) {
     distDirectory: './prod',
     filerev: {
       prod: {
-        src: ['prod/styles/css/*.css', 'prod/scripts/bundles/*.js']
+        src: ['prod/styles/css/*.css', 'prod/scripts/bundles/*.js', 'prod/images/*.jpg']
       }
     },
     userev: {
       prod: {
-        src: 'prod/velocity/index.html'
+        src: ['prod/velocity/index.html', 'prod/velocity/general.vm', 'prod/styles/css/*.css'],
+        options: {
+        	// todo: fix scripts regex
+        	patterns: {
+        		'styles': /css\/.*css/,
+        		'scripts': /scripts\/bundles\/.*js/,
+        		'images': /images\/.*jpg/
+        	}
+        }
       }
     },
     clean: {
@@ -147,6 +155,10 @@ module.exports = function(grunt) {
     },
     uglify: {
       prod: {
+    	options: {
+    		banner: '/* daniel moffat, www.dmoffat.com */',
+    		report: 'gzip'
+    	},
         files: [{
             expand: true,
             cwd: 'prod/scripts/bundles/',
@@ -164,7 +176,8 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'src/',
           src: [
-            'velocity/**/**'
+            'velocity/**/**',
+            'images/**/**'
           ],
           dest: 'prod/'
         }]
@@ -185,25 +198,38 @@ module.exports = function(grunt) {
 
 	// Development tasks, these are for when you're working on a project
 	grunt.registerTask('dev', [
+	    // Set directories / API keys
 		'setup',
+		// Compile less & postcss css files
 		'createCss',
-    'createScripts',
-    'concurrent:watch'
+		// Bundle js
+		'createScripts',
+		// Watch ALL less / js files for changes
+		'concurrent:watch'
 	]);
-
 
 	// Production tasks, these are for when you want to create a production-ready build
 	grunt.registerTask('build', [
+	    // Set directories / API keys
 		'setup',
-    'clean:prod',
-    'copy:prod',
-    'less:prod',
-    'postcss:prod',
-    'browserify:prod',
-    'uglify:prod',
-    'filerev:prod',
-    'userev:prod',
-    'state'
+		// Clean production folder if anything is in there already
+		'clean:prod',
+		// Copy all static files across (minus css and js)
+		'copy:prod',
+		// Compile less files
+		'less:prod',
+		// PostCSS css files
+		'postcss:prod',
+		// Bundle js
+		'browserify:prod',
+		// Minify js
+		'uglify:prod',
+		// Change file names
+		'filerev:prod',
+		// Use newly changed file names
+		'userev:prod',
+		// Print the current state
+		'state'
 	]);
 
   // Convenience task groups
@@ -217,9 +243,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('state', function() {
-    var config = require('./grunt_config').load();
-    grunt.log.writeln(config.prettyPrint())
-    grunt.log.writeln(config.get('filerev.summary'))
+
   });
 
 	// Make sure the configuration has some crucial values set!

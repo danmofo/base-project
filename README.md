@@ -6,19 +6,22 @@ This `Gruntfile` is designed to work for people who aren't comfortable configuri
 Improvements to the Grunt build script, unfortunately I'm stuck on this bandwagon so can't just hop over to gulp or whatever.
 
 Plugins used:
-- `grunt-prompt`
+- `grunt-contrib-copy`
+- `grunt-contrib-clean`
 - `grunt-contrib-less`
 - `grunt-contrib-watch`
+- `grunt-prompt`
 - `grunt-browserify`
 - `grunt-concurrent`
+- `grunt-filerev`
+- `grunt-userev`
+- `grunt-pageres`
 - `grunt-postcss`, plugins used:
     - `cssnano`, minifies css
     - `autoprefixer`, adds vendor prefixes
     - `pixrem`, adds support for REM units in crud browsers
 
 To add:
-- `grunt-pageres` for quick Q&A,
-- `grunt-browserify` for developing JS
 - CSS linter
 - JS linter
 - Look for useful `postcss` plugins
