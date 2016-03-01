@@ -3,9 +3,39 @@ Base Grunt tasks
 
 This `Gruntfile` is designed to work for people who aren't comfortable configuring this stuff manually themselves
 
-Improvements to the Grunt build script, unfortunately I'm stuck on this bandwagon so can't just hop over to gulp or whatever.
 
-Plugins used:
+Assumptions
+---
+
+ In order to work the following folder structure / naming convention should be followed:
+ 
+ - src
+ 	- styles/
+ 		- css/
+ 		- less/
+ 			- my-app.less
+ 			- another-website.less
+ 			- another-subdomain.less
+ 	- scripts
+ 		- bundles/
+ 		- another-app/
+ 			app.js
+ 		main.js
+ 		subdomain.js
+ 		_i-will-be-ignored.js
+ 	- images/
+ 		- my-image.jpg
+ 	- ???
+ - prod/
+ 	- styles/
+ 		css/
+
+By default it will create js / css bundles from everything contained in the root asset dir (/scripts or /styles/less). Files
+beginning with a `_` will be ignored!
+
+Plugins
+---
+
 - `grunt-contrib-copy`
 - `grunt-contrib-clean`
 - `grunt-contrib-less`
@@ -21,24 +51,20 @@ Plugins used:
     - `autoprefixer`, adds vendor prefixes
     - `pixrem`, adds support for REM units in crud browsers
 
+Todo:
+---
+- Normalise the file format used in `Gruntfile.js`, it's a mess.
 To add:
 - CSS linter
 - JS linter
 - Look for useful `postcss` plugins
 - Seperate config into several files
 - Clean up grunt config
-- conditional postcss configuration
-
-Todo:
----
-- Normalise the file format used in `Gruntfile.js`, it's a mess.
-
 
 Available tasks:
 ---
 
 - `dev` develop a project
-  -
 - `prod` produce a fully-optimized project build
 - `setup` setup your environment for development
 - `util` utility task for running one off optimizations (e.g. image compression, page screenshots, etc.)
@@ -56,6 +82,6 @@ Useful software:
 Useful commands:
 ---
 
-- `grunt --verbose`
+- `grunt --verbose`, see what Grunt is actually doing.
 - Serve development build, `cd ./src; server 2222`
 - Serve production build, `cd ./prod; server 4444`
