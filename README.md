@@ -1,14 +1,15 @@
 Base Grunt tasks
 ===
 
-This `Gruntfile` is designed to work for people who aren't comfortable configuring this stuff manually themselves
+This `Gruntfile` is designed to work for people who aren't comfortable configuring this stuff manually themselves, generally
+as long as you keep to the structure, it will work fine.
 
 
 Assumptions
 ---
 
  In order to work the following folder structure / naming convention should be followed:
- 
+
  - src
  	- styles/
  		- css/
@@ -32,6 +33,8 @@ Assumptions
 
 By default it will create js / css bundles from everything contained in the root asset dir (/scripts or /styles/less). Files
 beginning with a `_` will be ignored!
+
+Scripts will always be placed in `bundles/` and styles will always be placed in `css/`
 
 Plugins
 ---
@@ -64,10 +67,12 @@ To add:
 Available tasks:
 ---
 
-- `dev` develop a project
-- `prod` produce a fully-optimized project build
-- `setup` setup your environment for development
-- `util` utility task for running one off optimizations (e.g. image compression, page screenshots, etc.)
+- `dev`, used when developing a project, watches less / js files for changes in the working directory
+- `prod`, produce a fully-optimized project build
+- `optimise-images`, optimises images in the source directory
+- `test`, runs project tests
+- `screenshots`, takes screenshots of the specified URIs
+
 
 Useful links:
 ---

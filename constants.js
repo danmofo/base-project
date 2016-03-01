@@ -12,14 +12,18 @@ module.exports = {
 
   // File types / extensions we want to ignore
   FILE_BLACKLIST: [
-    '.'
-    // '.DS_Store',
-    // '.metadata',
-    // '.recommenders'
+    '.DS_Store',
+    '.metadata',
+    '.recommenders'
   ],
 
+  // Messages displayed to the user
   MESSAGES: {
     selectWorkingDirectory: 'Select the working directory (where the project lives)'
-  }
+  },
 
+  // Regular expressions
+  STYLE_REGEX: /css\/.*css/,
+  SCRIPT_REGEX: /scripts\/bundles\/.*js/,
+  IMAGE_REGEX: /images\/.*(jpg|png|gif)/
 };

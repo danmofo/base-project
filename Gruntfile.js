@@ -8,23 +8,11 @@ var CONSTANTS = require('./constants');
 
 module.exports = function(grunt) {
 
-  // Load tasks, todo: replace with a 1 liner that loads everything
-	grunt.loadNpmTasks('grunt-prompt');
-	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-postcss');
-  grunt.loadNpmTasks('grunt-concurrent');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-filerev');
-  grunt.loadNpmTasks('grunt-userev');
-  grunt.loadNpmTasks('grunt-pageres');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-copy');
+  require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-	grunt.initConfig({
-		baseDirectory: '.',
-		projectDirectory: './',
+  grunt.initConfig({
+    baseDirectory: '.',
+    projectDirectory: './',
     distDirectory: './prod',
     filerev: {
       prod: {
@@ -33,14 +21,15 @@ module.exports = function(grunt) {
     },
     userev: {
       prod: {
-        src: ['prod/velocity/index.html', 'prod/velocity/general.vm', 'prod/styles/css/*.css'],
+        // This is dumb
+        src: ['prod/velocity/index.html', 'prod/velocity/general.vm', 'prod/styles/css/*.css', 'prod/scripts/bundles/*.js'],
         options: {
-        	// todo: fix scripts regex
-        	patterns: {
-        		'styles': /css\/.*css/,
-        		'scripts': /scripts\/bundles\/.*js/,
-        		'images': /images\/.*jpg/
-        	}
+          // todo: make these better
+          patterns: {
+            'styles': CONSTANTS.STYLE_REGEX,
+            'scripts': CONSTANTS.SCRIPT_REGEX,
+            'images': CONSTANTS.IMAGE_REGEX
+          }
         }
       }
     },
@@ -107,19 +96,19 @@ module.exports = function(grunt) {
         }]
       }
     },
-		less: {
-			dev: {
+    less: {
+      dev: {
         options: {
           sourceMap: true
         },
-				files: [{
-						expand: true,
-						cwd: 'src/styles/less/',
-						src: ['*.less', '!_*.less'],
-						dest: './src/styles/css/',
-						ext: '.css'
-				}]
-			},
+        files: [{
+            expand: true,
+            cwd: 'src/styles/less/',
+            src: ['*.less', '!_*.less'],
+            dest: './src/styles/css/',
+            ext: '.css'
+        }]
+      },
       prod: {
         files: [{
             expand: true,
@@ -129,22 +118,23 @@ module.exports = function(grunt) {
             ext: '.css'
         }]
       }
-		},
-		watch: {
-			devStyles: {
-				files: 'src/styles/less/**/*.less',
-				tasks: [
+    },
+    watch: {
+      devStyles: {
+        files: 'src/styles/less/**/*.less',
+        tasks: [
           'less:dev',
           'postcss:dev'
         ]
-			},
+      },
       devScripts: {
         files: ['src/scripts/**/**', '!src/scripts/bundles/**/**'],
         tasks: [
-          'browserify:dev'
+          'browserify:dev',
+          'jshint:dev'
         ]
       }
-		},
+    },
     concurrent: {
       watch: {
         tasks: ['watch:devStyles', 'watch:devScripts'],
@@ -155,10 +145,10 @@ module.exports = function(grunt) {
     },
     uglify: {
       prod: {
-    	options: {
-    		banner: '/* daniel moffat, www.dmoffat.com */',
-    		report: 'gzip'
-    	},
+      options: {
+        banner: '/* daniel moffat, www.dmoffat.com */',
+        report: 'gzip'
+      },
         files: [{
             expand: true,
             cwd: 'prod/scripts/bundles/',
@@ -182,55 +172,71 @@ module.exports = function(grunt) {
           dest: 'prod/'
         }]
       }
+    },
+    jshint: {
+      options: {
+        reporter: require('jshint-stylish'),
+        globals: {
+          'module': true
+        }
+      },
+      dev: ['src/scripts/**/*.js', '!src/scripts/bundles/*.js']
+    },
+    jasmine: {
+      main: {
+        src: 'src/tests/specs/*.test.js'
+      }
     }
-	});
+  });
 
-	/**
-	 * 	Task registration
-	 */
+  /**
+   *  Task registration
+   */
 
-	grunt.registerTask('default', ['dev']);
+  grunt.registerTask('default', ['dev']);
 
-	// Setup tasks, these must be ran before you can work on anything
-	grunt.registerTask('setup', [
-		'validateConfig'
-	]);
+  // Setup tasks, these must be ran before you can work on anything
+  grunt.registerTask('setup', [
+    'validateConfig'
+  ]);
 
-	// Development tasks, these are for when you're working on a project
-	grunt.registerTask('dev', [
-	    // Set directories / API keys
-		'setup',
-		// Compile less & postcss css files
-		'createCss',
-		// Bundle js
-		'createScripts',
-		// Watch ALL less / js files for changes
-		'concurrent:watch'
-	]);
+  // Development tasks, these are for when you're working on a project
+  grunt.registerTask('dev', [
+      // Set directories / API keys
+    'setup',
+    // Compile less & postcss css files
+    'createCss',
+    // Bundle js
+    'createScripts',
+    // Watch ALL less / js files for changes
+    'concurrent:watch'
+  ]);
 
-	// Production tasks, these are for when you want to create a production-ready build
-	grunt.registerTask('build', [
-	    // Set directories / API keys
-		'setup',
-		// Clean production folder if anything is in there already
-		'clean:prod',
-		// Copy all static files across (minus css and js)
-		'copy:prod',
-		// Compile less files
-		'less:prod',
-		// PostCSS css files
-		'postcss:prod',
-		// Bundle js
-		'browserify:prod',
-		// Minify js
-		'uglify:prod',
-		// Change file names
-		'filerev:prod',
-		// Use newly changed file names
-		'userev:prod',
-		// Print the current state
-		'state'
-	]);
+  // Production tasks, these are for when you want to create a production-ready build
+  grunt.registerTask('build', [
+      // Set directories / API keys
+    'setup',
+    // Clean production folder if anything is in there already
+    'clean:prod',
+    // Copy all static files across (minus css and js)
+    'copy:prod',
+    // Compile less files
+    'less:prod',
+    // PostCSS css files
+    'postcss:prod',
+    // Bundle js
+    'browserify:prod',
+    // Minify js
+    'uglify:prod',
+    // Change file names
+    'filerev:prod',
+    // Use newly changed file names
+    'userev:prod'
+  ]);
+
+  grunt.registerTask('screenshots', [
+    'setup'
+  ])
 
   // Convenience task groups
   grunt.registerTask('createCss', [
@@ -242,34 +248,38 @@ module.exports = function(grunt) {
     'browserify:dev'
   ]);
 
-  grunt.registerTask('state', function() {
+  grunt.registerTask('test', [
+    'jasmine:main'
+  ]);
 
-  });
+  grunt.registerTask('lint', [
+    'jshint:dev'
+  ]);
 
-	// Make sure the configuration has some crucial values set!
-	grunt.registerTask('validateConfig', function() {
-		grunt.log.writeln('Validating config...');
+  // Make sure the configuration has some crucial values set!
+  grunt.registerTask('validateConfig', function() {
+    grunt.log.writeln('Validating config...');
 
-		var config = require('./grunt_config').load();
-		var requiredKeys = ['baseDirectory', 'projectDirectory'];
-		var ok = true;
+    var config = require('./grunt_config').load();
+    var requiredKeys = ['baseDirectory', 'projectDirectory'];
+    var ok = true;
 
-		// Check keys exists
-		requiredKeys.forEach(function(key) {
-			if(!config.hasKey(key)) {
-				ok = false;
-				grunt.log.writeln('Missing ' + key + ' from your config.');
-			}
-		});
+    // Check keys exists
+    requiredKeys.forEach(function(key) {
+      if(!config.hasKey(key)) {
+        ok = false;
+        grunt.log.writeln('Missing ' + key + ' from your config.');
+      }
+    });
 
-		// Add missing keys
-		if(!ok) {
-			config.set('baseDirectory', '.');
-			config.set('projectDirectory', './');
-			config.save();
-		}
+    // Add missing keys
+    if(!ok) {
+      config.set('baseDirectory', '.');
+      config.set('projectDirectory', './');
+      config.save();
+    }
 
     config.save();
 
-	});
+  });
 };
