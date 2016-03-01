@@ -6,6 +6,12 @@ This project aims to be a starting point for all new personal website build (and
 Uses `grunt` for tasks. The `Gruntfile` is designed to work for people who aren't comfortable configuring this stuff manually themselves, generally
 as long as you keep your projects in the following structure, it will work fine.
 
+What is Grunt doing?
+---
+
+![Alt text](diagram.jpg?raw=true "title")
+
+
 Assumptions
 ---
 
