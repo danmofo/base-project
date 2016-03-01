@@ -1,7 +1,18 @@
-var user = {
-	name: 'Anonymous',
-	favouriteStores: [],
-	loggedIn: false
+var DEFAULTS = {
+  firstName: 'Anonymous',
+  lastName: ''
 };
 
-module.exports = user;
+function User(info) {
+  info = info || {};
+  this.firstName = info.firstName || 'Anonymous';
+  this.lastName = info.lastName || '';
+}
+
+User.prototype.getFullName = function getFullName() {
+  return this.firstName + ' ' + this.lastName;
+};
+
+User.defaults = DEFAULTS;
+
+module.exports = User;

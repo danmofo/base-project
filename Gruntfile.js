@@ -133,11 +133,25 @@ module.exports = function(grunt) {
           'browserify:dev',
           'jshint:dev'
         ]
+      },
+      devScriptsWithTests: {
+        files: ['src/tests/spec/*.js', 'src/scripts/**/**/*.js', '!src/scripts/bundles/**/**'],
+        tasks: [
+          'browserify:dev',
+          'jshint:dev',
+          'karma:dev:run'
+        ]
       }
     },
     concurrent: {
       watch: {
         tasks: ['watch:devStyles', 'watch:devScripts'],
+        options: {
+          logConcurrentOutput: true
+        }
+      },
+      watchWithTests: {
+        tasks: ['watch:devStyles', 'watch:devScriptsWithTests', 'karma:dev'],
         options: {
           logConcurrentOutput: true
         }
@@ -180,11 +194,15 @@ module.exports = function(grunt) {
           'module': true
         }
       },
-      dev: ['src/scripts/**/*.js', '!src/scripts/bundles/*.js']
+      dev: [
+        'src/scripts/**/*.js',
+        '!src/scripts/bundles/*.js'
+      ]
     },
-    jasmine: {
-      main: {
-        src: 'src/tests/specs/*.test.js'
+    karma: {
+      dev: {
+        configFile: './karma.conf.js',
+        autoWatch: true
       }
     }
   });
@@ -209,7 +227,7 @@ module.exports = function(grunt) {
     // Bundle js
     'createScripts',
     // Watch ALL less / js files for changes
-    'concurrent:watch'
+    'concurrent:watchWithTests'
   ]);
 
   // Production tasks, these are for when you want to create a production-ready build
@@ -249,7 +267,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('test', [
-    'jasmine:main'
+    'karma:dev'
   ]);
 
   grunt.registerTask('lint', [

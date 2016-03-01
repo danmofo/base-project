@@ -10,6 +10,3 @@ var user = require('./common/user');
 var Handlebars = require('handlebars');
 var template = Handlebars.compile('<p>This was created using JS. 1 + 1 = {{ result }}. My name is {{ name }}.</p>');
 
-$(function() {
-  $(document.body).append('<img src="/images/link.jpg" />');
-});

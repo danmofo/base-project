@@ -1,9 +1,8 @@
-
-# Created by https://www.gitignore.io/api/osx,java,eclipse,node,vagrant,svn,bower,maven,sublimetext
-
 .grunt-temp/
 prod/
+.ignore-me
 
+# Created by https://www.gitignore.io/api/osx,java,eclipse,node,vagrant,svn,bower,maven,sublimetext
 ### OSX ###
 .DS_Store
 .AppleDouble
@@ -179,5 +178,3 @@ buildNumber.properties
 
 # sftp configuration file
 sftp-config.json
-
-.ignore-me
