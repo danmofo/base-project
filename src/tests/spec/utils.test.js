@@ -15,7 +15,6 @@ describe('utils.js', function() {
 
   it('nothing() should do nothing', function() {
     expect(false).toBe(false);
-    //
   })
 
 });

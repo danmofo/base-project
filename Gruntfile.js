@@ -5,15 +5,37 @@
  */
 
 var CONSTANTS = require('./constants');
+var gruntConfig = require('./grunt-config');
+var prettyifyJson = require('./grunt-utils').prettyifyJson;
 
 module.exports = function(grunt) {
+  // Allow user to specify several flags using a cli to exclude / include certain tasks,
+  // because the extra stuff needed for running tests (more watched files, karma, jasmine..)
+  // can slow down development.
+  //
+  // Likewise for scripts, if you are only changing CSS, there's no reason to watch scripts for
+  // changes along with the overhead that comes with that.
+  //
+  // grunt dev --no-tests --no-scripts
+  //
+  var cliOptions = {
+    'no-tests' : grunt.option('no-tests'),
+    'no-scripts': grunt.option('no-scripts')
+  };
 
-  require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+  grunt.log.writeln('CLI options: ');
+  grunt.log.writeln(prettyifyJson(cliOptions, 2));
+  grunt.log.writeln('Exisiting config found at ./config.json: ');
+  grunt.log.writeln(prettyifyJson(gruntConfig.localConfig, 2));
 
+  // Show time taken for each task
+  require('time-grunt')(grunt);
+
+  // Only load the required plugins for each task
+  require('jit-grunt')(grunt);
+
+  // Config
   grunt.initConfig({
-    baseDirectory: '.',
-    projectDirectory: './',
-    distDirectory: './prod',
     filerev: {
       prod: {
         src: ['prod/styles/css/*.css', 'prod/scripts/bundles/*.js', 'prod/images/*.jpg']
@@ -21,10 +43,13 @@ module.exports = function(grunt) {
     },
     userev: {
       prod: {
-        // This is dumb
-        src: ['prod/velocity/index.html', 'prod/velocity/general.vm', 'prod/styles/css/*.css', 'prod/scripts/bundles/*.js'],
+        src: [
+          'prod/velocity/index.html',
+          'prod/velocity/general.vm',
+          'prod/styles/css/*.css',
+          'prod/scripts/bundles/*.js'
+        ],
         options: {
-          // todo: make these better
           patterns: {
             'styles': CONSTANTS.STYLE_REGEX,
             'scripts': CONSTANTS.SCRIPT_REGEX,
@@ -34,17 +59,22 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      prod: ['prod/']
+      prod: ['prod/'],
+      temp: ['.grunt-temp/']
     },
     postcss: {
+      options: {
+        processors: [
+          require('pixrem')(),
+          require('autoprefixer')({
+            browsers: 'last 5 versions'
+          })
+        ]
+      },
       dev: {
         options: {
           map: true,
           processors: [
-            require('pixrem')(),
-            require('autoprefixer')({
-              browsers: 'last 5 versions'
-            }),
             require('cssnano')({
               discardComments: {
                 removeAll: true
@@ -58,13 +88,7 @@ module.exports = function(grunt) {
         options: {
           map: false,
           processors: [
-            require('pixrem')(),
-            require('autoprefixer')({
-              browsers: 'last 5 versions'
-            }),
-            require('cssnano')({
-
-            })
+            require('cssnano')()
           ]
         },
         src: 'prod/styles/css/*.css'
@@ -128,14 +152,21 @@ module.exports = function(grunt) {
         ]
       },
       devScripts: {
-        files: ['src/scripts/**/**', '!src/scripts/bundles/**/**'],
+        files: [
+          'src/scripts/**/**',
+          '!src/scripts/bundles/**/**'
+        ],
         tasks: [
           'browserify:dev',
           'jshint:dev'
         ]
       },
       devScriptsWithTests: {
-        files: ['src/tests/spec/*.js', 'src/scripts/**/**/*.js', '!src/scripts/bundles/**/**'],
+        files: [
+          'src/tests/spec/*.js',
+          'src/scripts/**/**/*.js',
+          '!src/scripts/bundles/**/**'
+        ],
         tasks: [
           'browserify:dev',
           'jshint:dev',
@@ -145,13 +176,20 @@ module.exports = function(grunt) {
     },
     concurrent: {
       watch: {
-        tasks: ['watch:devStyles', 'watch:devScripts'],
+        tasks: [
+          'watch:devStyles',
+          'watch:devScripts'
+        ],
         options: {
           logConcurrentOutput: true
         }
       },
       watchWithTests: {
-        tasks: ['watch:devStyles', 'watch:devScriptsWithTests', 'karma:dev'],
+        tasks: [
+          'watch:devStyles',
+          'watch:devScriptsWithTests',
+          'karma:dev'
+        ],
         options: {
           logConcurrentOutput: true
         }
@@ -159,10 +197,10 @@ module.exports = function(grunt) {
     },
     uglify: {
       prod: {
-      options: {
-        banner: '/* daniel moffat, www.dmoffat.com */',
-        report: 'gzip'
-      },
+        options: {
+          banner: CONSTANTS.SCRIPT_BANNER,
+          report: 'gzip'
+        },
         files: [{
             expand: true,
             cwd: 'prod/scripts/bundles/',
@@ -201,8 +239,32 @@ module.exports = function(grunt) {
     },
     karma: {
       dev: {
-        configFile: './karma.conf.js',
-        autoWatch: true
+        configFile: './karma.conf.js'
+      }
+    },
+    pageres: {
+      screenshot: {
+        options: {
+          urls: [
+            'resources.giveasyoulive.dev/giveasyoulive/?cid=1517',
+            'www.giveasyoulive.com'
+          ],
+          // look into pulling resolutions directly from our analytics:
+          // https://www.npmjs.com/package/googleanalytics
+          sizes: ['1200x800', '800x600'],
+          dest: '.grunt-temp/screenshots'
+        }
+      }
+    },
+    pagespeed: {
+      test: {
+        options: {
+          nokey: true,
+          strategy: 'desktop',
+          threshold: 40,
+          url: 'www.giveasyoulive.com',
+          locale: 'en_GB'
+        }
       }
     }
   });
@@ -253,8 +315,12 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('screenshots', [
-    'setup'
-  ])
+    'pageres:screenshot'
+  ]);
+
+  grunt.registerTask('perf', [
+    'pagespeed:test'
+  ]);
 
   // Convenience task groups
   grunt.registerTask('createCss', [
@@ -266,19 +332,11 @@ module.exports = function(grunt) {
     'browserify:dev'
   ]);
 
-  grunt.registerTask('test', [
-    'karma:dev'
-  ]);
-
-  grunt.registerTask('lint', [
-    'jshint:dev'
-  ]);
-
   // Make sure the configuration has some crucial values set!
   grunt.registerTask('validateConfig', function() {
     grunt.log.writeln('Validating config...');
 
-    var config = require('./grunt_config').load();
+    var config = require('./grunt-config').load();
     var requiredKeys = ['baseDirectory', 'projectDirectory'];
     var ok = true;
 
@@ -294,10 +352,8 @@ module.exports = function(grunt) {
     if(!ok) {
       config.set('baseDirectory', '.');
       config.set('projectDirectory', './');
-      config.save();
     }
 
-    config.save();
 
   });
 };

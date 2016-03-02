@@ -25,5 +25,8 @@ module.exports = {
   // Regular expressions
   STYLE_REGEX: /css\/.*css/,
   SCRIPT_REGEX: /scripts\/bundles\/.*js/,
-  IMAGE_REGEX: /images\/.*(jpg|png|gif)/
+  IMAGE_REGEX: /images\/.*(jpg|png|gif)/,
+
+  // Banner for prepending scripts
+  SCRIPT_BANNER: '/* daniel moffat (@danmofo), www.dmoffat.com */'
 };

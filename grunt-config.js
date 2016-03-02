@@ -1,7 +1,7 @@
 /**
- * 	Grunt config wrapper 
+ * 	Grunt config wrapper
  *  @author: danielmoffat
- * 
+ *
  * 	Wraps grunt.config and adds some useful utility methods:
  * 	- Pretty print config
  * 	- Checks if config key exists
@@ -11,10 +11,11 @@
  *  The last two points are very useful for prompt based configuration,
  *  e.g. where the user has to set up some paths before they can
  *  get going.
- * 
+ *
  */
 
 var grunt = require('grunt');
+var prettyifyJson = require('./grunt-utils').prettyifyJson;
 var gruntConfig = grunt.config;
 
 // Defaults
@@ -39,29 +40,19 @@ function prettyPrint() {
 }
 
 /**
- * Prettify an object for debugging
- * 
- * @param  {Object} obj    The object to prettify
- * @param  {Number} spaces Number of spaces to pad with
- * @return {String}        Formatted string of JSON
- */
-function prettifyJson(obj, spaces) {
-	return JSON.stringify(obj, null, spaces || 4);
-}
-
-/**
  * Load any existing configuration from DEFAULT_CONFIG_LOCATION
  * and copies any configuration found to the internal config.
  *
- * @return {void} 
+ * @return {void}
  */
 function load(configLocation) {
 	var configLocation = configLocation || DEFAULT_CONFIG_LOCATION;
 
 	if(grunt.file.exists(configLocation)) {
 		try {
-			this.localConfig = grunt.file.readJSON(configLocation);	
+			this.localConfig = grunt.file.readJSON(configLocation);
 		} catch(exception) {
+      // todo: probably should delete this
 			grunt.log.writeln('Error parsing existing config, deleting...');
 			grunt.file.delete(configLocation);
 			createEmptyConfig();
@@ -70,25 +61,7 @@ function load(configLocation) {
 		createEmptyConfig();
 	}
 
-	// Copy properties over
-	merge(this.localConfig, this.data);
-
 	return this;
-}
-
-/**
- * Merge properties from a (target) to b (destination).
- * 
- * @param  {Object} a Target object
- * @param  {Object} b Destination object
- * @return {void}
- */
-function merge(a, b) {
-	for(var key in a) {
-		if(!b.hasOwnProperty(key)) {
-			b[key] = a[key];
-		}
-	}
 }
 
 /**
@@ -108,7 +81,7 @@ function createEmptyConfig(configLocation) {
  * @return {Boolean}     Whether the specified key exists
  */
 function hasKey(key) {
-	return this.data[key] !== undefined;
+	return this.get(key) !== undefined;
 }
 
 /**
