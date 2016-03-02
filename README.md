@@ -57,16 +57,20 @@ TODO:
 - Look for useful `postcss` plugins
 - Seperate config into several files
 - Clean up grunt config
+- Integrate into `vagrant` repo
+- Add existing Angular application
+- Add work project source
+- Add prompt / helper for setting up configuration
 
 Available tasks:
 ---
 
-- `dev`, used when developing a project, watches less / js files for changes in the working directory
-- `prod`, produce a fully-optimized project build
-- `optimise-images`, optimises images in the source directory
-- `test`, runs project tests on their own
-- `screenshots`, takes screenshots of the specified URIs and stores them in `./grunt-temp/screenshots`.
-- `perf`, runs project through [Google PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
+- `dev` used when developing a project, watches less / js files for changes in the working directory
+- `prod` produce a fully-optimized project build
+- `optimise-images` optimises images in the source directory
+- `test` runs project tests on their own
+- `screenshots` takes screenshots of the specified URIs and stores them in `./grunt-temp/screenshots`.
+- `perf` runs project through [Google PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
 
 Available options:
 ---

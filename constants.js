@@ -22,6 +22,10 @@ module.exports = {
     selectWorkingDirectory: 'Select the working directory (where the project lives)'
   },
 
+  ERROR_MESSAGES: {
+    'invalidConfig': 'Your configuration file is invalid! Sort it out. ~/.config.json.'
+  },
+
   // Regular expressions
   STYLE_REGEX: /css\/.*css/,
   SCRIPT_REGEX: /scripts\/bundles\/.*js/,

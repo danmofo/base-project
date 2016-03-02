@@ -7,7 +7,6 @@ describe('User.js', function() {
 
     expect(u.firstName).toBe('Anonymous');
     expect(u.lastName).toBe('');
-
   });
 
   it('Should set the properties if provided', function() {
@@ -25,6 +24,11 @@ describe('User.js', function() {
       lastName: 'moffat'
     });
     expect(u.getFullName()).toBe('daniel moffat');
+  });
+
+  it('Should fail in everything but Firefox', function() {
+    var fail = window.navigator.userAgent.indexOf('Firefox') > -1;
+    expect(true).toBe(true);
   });
 
 });
