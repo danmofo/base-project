@@ -33,7 +33,8 @@ Install by doing the following (make sure you have `node` and `git` installed on
 	- `perf` runs project through [Google PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
 	- `scratchpad`, for testing things
 	
-Use these flags to dictate what tasks run / which files are watched. All of these have default values of `false`. These are generally used when the tests take too long to execute or if you are just changing styles. They are also good for working with legacy projects (projects before these practices were followed) since they may not have tests for example (and therefore would fail a lot of things!)
+Use these flags to dictate what tasks run / which files are watched. All of these have default values of `false`. These are generally used when the tests take too long to execute or if you are just changing styles. They are also good for working with legacy projects (projects before these practices were followed) since they may not have tests for example (and therefore would fail a lot of things!):
+
 	- `--no-tests`, removes tests from `dev` task.
 	- `--no-scripts`, removes scripts from `dev` task (and since right now all we test are scripts, this applies `--no-tests` implicitly.
 	- `--src`, specify the source directory, default is `./src`.
