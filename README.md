@@ -26,7 +26,7 @@ Install by doing the following (make sure you have `node` and `git` installed on
 - **(Optional)** `npm install -g http-server` to serve files if you aren't running Apache or Tomcat.
 - `grunt <command> --<flag>=<flag-value>`, where you can specify the following tasks:
 	- `dev` used when developing a project, watches less / js files for changes in the working directory
-	- `prod` produce a fully-optimized project build
+	- `build` produce a fully-optimized project build
 	- `optimise-images` optimises images in the source directory
 	- `test` runs project tests on their own
 	- `screenshots` takes screenshots of the specified URIs and stores them in `./grunt-temp/screenshots`.
@@ -42,7 +42,7 @@ Use these flags to dictate what tasks run / which files are watched. All of thes
 
 Some examples:
 
-- Run a full build with a custom source directory: `grunt build  --src='/var/everyclick/development/giveasyoulive.com/trunk'`
+- Run a full build with a custom source directory: `grunt build --src='/var/everyclick/development/giveasyoulive.com/trunk'`
 - Develop the project in `src` without running tests: `grunt dev --no-tests`
 - Output the build to a `dest` directory: `grunt build dest='/var/everyclick/tomcat/foo/'`
 
