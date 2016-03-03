@@ -24,9 +24,13 @@ module.exports = function(grunt) {
     'no-tests' : grunt.option('no-tests'),
     'no-scripts': grunt.option('no-scripts')
   };
-
-  grunt.log.writeln('CLI options: ');
-  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));
+  
+  if(grunt.option.flags().length) {
+	  grunt.log.writeln('Found CLI options: ');
+	  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));
+  } else {
+	  grunt.log.writeln('Using default options.')
+  }
     
   // Show time taken for each task
   require('time-grunt')(grunt);
@@ -306,7 +310,11 @@ module.exports = function(grunt) {
   /**
    *  Task registration
    */
-  grunt.registerTask('default', ['dev']);
+  grunt.registerTask('default', ['help']);
+  
+  grunt.registerTask('help', function() {
+	  grunt.fail.warn('You need to specify a command! Example commands: dev, build, optmise-images, screenshots, perf')
+  });
 
   // Setup tasks, these must be ran before you can work on anything
   grunt.registerTask('setup', [
