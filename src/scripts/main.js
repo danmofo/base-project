@@ -10,9 +10,9 @@ var user = require('./common/user');
 var Handlebars = require('handlebars');
 var template = Handlebars.compile('<p>This was created using JS. 1 + 1 = {{ result }}. My name is {{ name }}.</p>');
 
-// This will be replaced!
+// This will be replaced and added to the page
 var script = '/scripts/bundles/another-bundle.js';
 
 var s = document.createElement('script');
 s.src = script;
-document.body.append(s);
+document.body.appendChild(s);

@@ -5,37 +5,40 @@
  */
 
 var CONSTANTS = require('./constants');
-var gruntConfig = require('./grunt-config');
-var prettyifyJson = require('./grunt-utils').prettyifyJson;
+var utils = require('./grunt-utils');
 
 module.exports = function(grunt) {
   // Allow user to specify several flags using a cli to exclude / include certain tasks,
-  // because the extra stuff needed for running tests (more watched files, karma, jasmine..)
+  // because the extra tasks needed for running tests (watch, karma, jasmine..)
   // can slow down development.
   //
   // Likewise for scripts, if you are only changing CSS, there's no reason to watch scripts for
-  // changes along with the overhead that comes with that.
+  // changes along with the overhead that comes with it.
   //
-  // grunt dev --no-tests --no-scripts
+  // Example:
+  // grunt dev --src=src --dest=prod --no-tests --no-scripts
   //
   var cliOptions = {
+    'src': grunt.option('src') || CONSTANTS.DEFAULT_SRC_DIRECTORY,
+    'dest': grunt.option('dest') || CONSTANTS.DEFAULT_DEST_DIRECTORY,
     'no-tests' : grunt.option('no-tests'),
     'no-scripts': grunt.option('no-scripts')
   };
 
   grunt.log.writeln('CLI options: ');
-  grunt.log.writeln(prettyifyJson(cliOptions, 2));
-  grunt.log.writeln('Exisiting config found at ./config.json: ');
-  grunt.log.writeln(prettyifyJson(gruntConfig.localConfig, 2));
-
+  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));
+    
   // Show time taken for each task
   require('time-grunt')(grunt);
 
-  // Only load the required plugins for each task
+  // Only load the required plugins for each task, this drastically speeds up watch times,
+  // since we aren't loading the heavy plugins (imagemin etc) unless we actually use them
   require('jit-grunt')(grunt);
 
   // Config
   grunt.initConfig({
+	srcDirectory: cliOptions['src'],
+	destDirectory: cliOptions['dest'],
     filerev: {
       prod: {
         src: ['prod/styles/css/*.css', 'prod/scripts/bundles/*.js', 'prod/images/*.jpg']
@@ -44,10 +47,10 @@ module.exports = function(grunt) {
     userev: {
       prod: {
         src: [
-          'prod/velocity/index.html',
-          'prod/velocity/general.vm',
-          'prod/styles/css/*.css',
-          'prod/scripts/bundles/*.js'
+          '<%= destDirectory %>/velocity/index.html',
+          '<%= destDirectory %>/velocity/general.vm',
+          '<%= destDirectory %>/styles/css/*.css',
+          '<%= destDirectory %>/scripts/bundles/*.js'
         ],
         options: {
           patterns: {
@@ -59,7 +62,7 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      prod: ['prod/'],
+      prod: ['<%= destDirectory %>'],
       temp: ['.grunt-temp/']
     },
     postcss: {
@@ -82,7 +85,7 @@ module.exports = function(grunt) {
             })
           ]
         },
-        src: 'src/styles/css/*.css'
+        src: '<%= srcDirectory %>/styles/css/*.css'
       },
       prod: {
         options: {
@@ -91,7 +94,7 @@ module.exports = function(grunt) {
             require('cssnano')()
           ]
         },
-        src: 'prod/styles/css/*.css'
+        src: '<%= destDirectory %>/styles/css/*.css'
       }
     },
     browserify: {
@@ -103,9 +106,9 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          cwd: 'src/scripts/',
+          cwd: '<%= srcDirectory %>/scripts/',
           src: ['*.js', '!_*.js'],
-          dest: 'src/scripts/bundles/',
+          dest: '<%= srctDirectory %>/scripts/bundles/',
           ext: '-bundle.js'
         }]
       },
@@ -113,9 +116,9 @@ module.exports = function(grunt) {
         options: {},
         files: [{
           expand: true,
-          cwd: 'src/scripts/',
+          cwd: '<%= srcDirectory %>/scripts/',
           src: ['*.js', '!_*.js'],
-          dest: 'prod/scripts/bundles/',
+          dest: '<%= destDirectory %>/scripts/bundles/',
           ext: '-bundle.js'
         }]
       }
@@ -127,25 +130,25 @@ module.exports = function(grunt) {
         },
         files: [{
             expand: true,
-            cwd: 'src/styles/less/',
+            cwd: '<%= srcDirectory %>/styles/less/',
             src: ['*.less', '!_*.less'],
-            dest: './src/styles/css/',
+            dest: '<%= srcDirectory %>/styles/css/',
             ext: '.css'
         }]
       },
       prod: {
         files: [{
             expand: true,
-            cwd: 'src/styles/less/',
+            cwd: '<%= srcDirectory %>/styles/less/',
             src: ['*.less', '!_*.less'],
-            dest: './prod/styles/css/',
+            dest: '<%= destDirectory %>/styles/css/',
             ext: '.css'
         }]
       }
     },
     watch: {
       devStyles: {
-        files: 'src/styles/less/**/*.less',
+        files: '<%= srcDirectory %>/styles/less/**/*.less',
         tasks: [
           'less:dev',
           'postcss:dev'
@@ -153,8 +156,8 @@ module.exports = function(grunt) {
       },
       devScripts: {
         files: [
-          'src/scripts/**/**',
-          '!src/scripts/bundles/**/**'
+          '<%= srcDirectory %>/scripts/**/**',
+          '!<%= srcDirectory %>/scripts/bundles/**/**'
         ],
         tasks: [
           'browserify:dev',
@@ -163,9 +166,9 @@ module.exports = function(grunt) {
       },
       devScriptsWithTests: {
         files: [
-          'src/tests/spec/*.js',
-          'src/scripts/**/**/*.js',
-          '!src/scripts/bundles/**/**'
+          '<%= srcDirectory %>/tests/spec/*.js',
+          '<%= srcDirectory %>/scripts/**/**/*.js',
+          '!<%= srcDirectory %>/scripts/bundles/**/**'
         ],
         tasks: [
           'browserify:dev',
@@ -175,24 +178,24 @@ module.exports = function(grunt) {
       }
     },
     concurrent: {
+     options: {
+    	 logConcurrentOutput: true
+     },
+      watchStylesOnly: {
+    	  tasks: ['watch:devStyles']
+      },
       watch: {
         tasks: [
           'watch:devStyles',
-          'watch:devScripts'
-        ],
-        options: {
-          logConcurrentOutput: true
-        }
+          'watch:devScripts',
+        ]
       },
       watchWithTests: {
         tasks: [
           'watch:devStyles',
           'watch:devScriptsWithTests',
           'karma:dev'
-        ],
-        options: {
-          logConcurrentOutput: true
-        }
+        ]
       }
     },
     uglify: {
@@ -203,9 +206,9 @@ module.exports = function(grunt) {
         },
         files: [{
             expand: true,
-            cwd: 'prod/scripts/bundles/',
+            cwd: '<%= destDirectory %>/scripts/bundles/',
             src: '*.js',
-            dest: 'prod/scripts/bundles/',
+            dest: '<%= destDirectory %>/scripts/bundles/',
             ext: '.js'
         }]
       }
@@ -216,13 +219,24 @@ module.exports = function(grunt) {
       prod: {
         files: [{
           expand: true,
-          cwd: 'src/',
+          cwd: '<%= srcDirectory %>/',
           src: [
-            'velocity/**/**',
-            'images/**/**'
+            'velocity/**/**'
           ],
-          dest: 'prod/'
+          dest: '<%= destDirectory %>/'
         }]
+      },
+      'optimised-images': {
+    	  files: [{
+    		  expand: true,
+    		  cwd: '<%= srcDirectory %>/images/optimised/',
+    		  src: [
+    		    '*.jpg',
+    		    '*.png',
+    		    '*.gif'
+    		  ],
+    		  dest: '<%= destDirectory %>/images/'
+    	  }]
       }
     },
     jshint: {
@@ -233,8 +247,8 @@ module.exports = function(grunt) {
         }
       },
       dev: [
-        'src/scripts/**/*.js',
-        '!src/scripts/bundles/*.js'
+        '<%= srcDirectory %>/scripts/**/*.js',
+        '!<%= srcDirectory %>/scripts/bundles/*.js'
       ]
     },
     karma: {
@@ -246,12 +260,19 @@ module.exports = function(grunt) {
       screenshot: {
         options: {
           urls: [
-            'resources.giveasyoulive.dev/giveasyoulive/?cid=1517',
-            'www.giveasyoulive.com'
+            'www.giveasyoulive.com',
+            'www.giveasyoulive.com/ways-to-raise',
+            'cardsforcauses.giveasyoulive.com',
+            'workwithus.giveasyoulive.com'
           ],
           // look into pulling resolutions directly from our analytics:
           // https://www.npmjs.com/package/googleanalytics
-          sizes: ['1200x800', '800x600'],
+          sizes: [
+            '1920x1080', // Normal desktop
+            '1366x768', // Average user's desktop
+            '1024x768', // iPad (smallest)
+            '320x480' // iPhone (smallest)
+          ],
           dest: '.grunt-temp/screenshots'
         }
       }
@@ -266,40 +287,60 @@ module.exports = function(grunt) {
           locale: 'en_GB'
         }
       }
+    },
+    imagemin: {
+    	squash: {
+    		files: [{
+    			expand: true,
+    			cwd: '<%= srcDirectory %>/images/',
+    			src: [
+    			  '**/*.jpg',
+    			  '!optimised/*.jpg'
+    			],
+    			dest: '<%= srcDirectory %>/images/optimised/'
+    		}]
+    	}
     }
   });
 
   /**
    *  Task registration
    */
-
   grunt.registerTask('default', ['dev']);
 
   // Setup tasks, these must be ran before you can work on anything
   grunt.registerTask('setup', [
-    'validateConfig'
+    'validateFlags'
   ]);
 
-  // Development tasks, these are for when you're working on a project
+  // Development task, this is for when you're working on a project
   grunt.registerTask('dev', [
       // Set directories / API keys
     'setup',
     // Compile less & postcss css files
     'createCss',
-    // Bundle js
+    // Bundle js, this runs regardless of whether you are changing scripts or not, since
+    // you may not have created scripts from the sources before.
     'createScripts',
     // Watch ALL less / js files for changes
-    'concurrent:watchWithTests'
+    utils.getConcurrentTask({
+    	'no-tests':cliOptions['no-tests'],
+    	'no-scripts':cliOptions['no-scripts']
+    })
   ]);
 
-  // Production tasks, these are for when you want to create a production-ready build
+  // Production task, this is for when you want to create a production-ready build
   grunt.registerTask('build', [
       // Set directories / API keys
     'setup',
     // Clean production folder if anything is in there already
     'clean:prod',
+    // Minify images
+    'optimise-images',
     // Copy all static files across (minus css and js)
     'copy:prod',
+    // Copy optimised images from optimised/ to / in the prod images folder
+    'copy:optimised-images',
     // Compile less files
     'less:prod',
     // PostCSS css files
@@ -310,19 +351,28 @@ module.exports = function(grunt) {
     'uglify:prod',
     // Change file names
     'filerev:prod',
-    // Use newly changed file names
+    // Use newly changed file names in source files
     'userev:prod'
   ]);
 
+  // Screenshot task, this is for testing purposes
   grunt.registerTask('screenshots', [
     'pageres:screenshot'
   ]);
 
+  // Perf task, this is for giving a general overview of performance on the website
   grunt.registerTask('perf', [
     'pagespeed:test'
   ]);
+  
+  // Optimise images task, this is for optimising images by making their size smaller with sacrificing
+  // too much quality.
+  grunt.registerTask('optimise-images', [
+     'imagemin:squash'                                    
+  ]);
 
-  // Convenience task groups
+  // Convenience task groups - this allows us to add more related processing in these blocks
+  // without having to touch anything else in the build
   grunt.registerTask('createCss', [
     'less:dev',
     'postcss:dev'
@@ -331,29 +381,42 @@ module.exports = function(grunt) {
   grunt.registerTask('createScripts', [
     'browserify:dev'
   ]);
+  
+  // For testing
+  grunt.registerTask('scratchpad', function() {
+	  // Write a function that compares the test directory to the src directory to make sure there are tests for each file.
+	 grunt.log.writeln('hello world!')
+  });
+  
+  // Dummy task to use when we build task lists dynamically!
+  grunt.registerTask('_dummyTask', function() { grunt.log.writeln('_dummyTask'); });
 
-  // Make sure the configuration has some crucial values set!
-  grunt.registerTask('validateConfig', function() {
-    grunt.log.writeln('Validating config...');
-
-    var config = require('./grunt-config').load();
-    var requiredKeys = ['baseDirectory', 'projectDirectory'];
-    var ok = true;
-
-    // Check keys exists
-    requiredKeys.forEach(function(key) {
-      if(!config.hasKey(key)) {
-        ok = false;
-        grunt.log.writeln('Missing ' + key + ' from your config.');
-      }
-    });
-
-    // Add missing keys
-    if(!ok) {
-      config.set('baseDirectory', '.');
-      config.set('projectDirectory', './');
-    }
-
+  // Validate the flag values (make sure folders exist and that folder structure looks usable)
+  grunt.registerTask('validateFlags', function() {
+	  
+	  // Check src exists
+	  if(!grunt.file.exists(cliOptions['src'])) {
+		  grunt.fail.fatal(
+	        grunt.template.process(CONSTANTS.ERROR_MESSAGES.invalidSrc, {directory: cliOptions['src']})
+		  );
+	  }
+	  
+	  // Check dest exists
+	  if(!grunt.file.exists(cliOptions['dest'])) {
+		  grunt.fail.fatal(
+	        grunt.template.process(CONSTANTS.ERROR_MESSAGES.invalidDest, {data: {directory: cliOptions['dest']}})
+	      );
+	  }
+	  
+	  // Check src has 'web' like folders, it can flag problems with your project setup
+	  CONSTANTS.REQUIRED_FOLDERS.forEach(function(folder) {
+		  var path = cliOptions['src'] + '/' + folder;
+		  if(!grunt.file.exists(path)){
+			  var errorMessage = grunt.template.process(CONSTANTS.ERROR_MESSAGES.missingFolders, {data: {directory: path}});
+  
+			  grunt.fail.fatal(errorMessage);
+		  }
+	  });
 
   });
 };

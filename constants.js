@@ -1,6 +1,6 @@
 /**
  *  Constants used in the Grunt script, including:
- *  - Error mesages,
+ *  - Error mesSages,
  *  - Default file paths
  *  - ???
  *
@@ -8,7 +8,13 @@
  */
 
 module.exports = {
-  DEFAULT_BASE_DIRECTORY: '/var/everyclick/development',
+	
+  DEFAULT_SRC_DIRECTORY: './src',
+  DEFAULT_DEST_DIRECTORY: './prod',
+  
+  // Required folders in the src directory, generally just a styles / scripts / images will do, this
+  // implies it's some sort of web project that this may work in
+  REQUIRED_FOLDERS: ['styles/less', 'scripts/', 'images/'],
 
   // File types / extensions we want to ignore
   FILE_BLACKLIST: [
@@ -23,7 +29,13 @@ module.exports = {
   },
 
   ERROR_MESSAGES: {
-    'invalidConfig': 'Your configuration file is invalid! Sort it out. ~/.config.json.'
+    'invalidSrc': [
+      'The specified source folder "<%= directory %> doesnt exist, ',
+      'create it (mkdir folder_name) and add your source manually, or use a symbolic link (rm src && ln -s your/src/ src)',
+  	  ' to use existing sources.'
+    ].join(''),
+    'invalidDest': 'The specified destination folder "<%= directory %>" doesnt exist.',
+    'missingFolders': 'Your src folder is missing a folder (<%= directory %>), things may not work as you expect, investigate!'
   },
 
   // Regular expressions
