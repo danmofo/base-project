@@ -30,7 +30,7 @@ module.exports = function(grunt) {
 	  grunt.log.writeln('Found CLI options: ');
 	  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));
   } else {
-	  grunt.log.writeln('Using default options.')
+	  grunt.log.writeln('Using default options.');
   }
     
   // Show time taken for each task
@@ -42,8 +42,8 @@ module.exports = function(grunt) {
 
   // Config
   grunt.initConfig({
-	srcDirectory: cliOptions['src'],
-	destDirectory: cliOptions['dest'],
+	srcDirectory: cliOptions.src,
+	destDirectory: cliOptions.dest,
     filerev: {
       prod: {
         src: ['prod/styles/css/*.css', 'prod/scripts/bundles/*.js', 'prod/images/*.jpg']
@@ -326,7 +326,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['help']);
   
   grunt.registerTask('help', function() {
-	  grunt.fail.warn('You need to specify a command! Example commands: dev, build, optmise-images, screenshots, perf')
+	  grunt.fail.warn(CONSTANTS.ERROR_MESSAGES.missingCommand);
   });
 
   // Setup tasks, these must be ran before you can work on anything
@@ -406,8 +406,7 @@ module.exports = function(grunt) {
   
   // For testing
   grunt.registerTask('scratchpad', function() {
-	  // Write a function that compares the test directory to the src directory to make sure there are tests for each file.
-	 grunt.log.writeln('hello world!')
+	 grunt.log.writeln('hello world!');
   });
   
   // Dummy task to use when we build task lists dynamically!
@@ -417,22 +416,22 @@ module.exports = function(grunt) {
   grunt.registerTask('validateFlags', function() {
 	  
 	  // Check src exists
-	  if(!grunt.file.exists(cliOptions['src'])) {
+	  if(!grunt.file.exists(cliOptions.src)) {
 		  grunt.fail.fatal(
-	        grunt.template.process(CONSTANTS.ERROR_MESSAGES.invalidSrc, {directory: cliOptions['src']})
+	        grunt.template.process(CONSTANTS.ERROR_MESSAGES.invalidSrc, {directory: cliOptions.src})
 		  );
 	  }
 	  
 	  // Check dest exists
-	  if(!grunt.file.exists(cliOptions['dest'])) {
+	  if(!grunt.file.exists(cliOptions.dest)) {
 		  grunt.fail.fatal(
-	        grunt.template.process(CONSTANTS.ERROR_MESSAGES.invalidDest, {data: {directory: cliOptions['dest']}})
+	        grunt.template.process(CONSTANTS.ERROR_MESSAGES.invalidDest, {data: {directory: cliOptions.dest}})
 	      );
 	  }
 	  
 	  // Check src has 'web' like folders, it can flag problems with your project setup
 	  CONSTANTS.REQUIRED_FOLDERS.forEach(function(folder) {
-		  var path = cliOptions['src'] + '/' + folder;
+		  var path = cliOptions.src + '/' + folder;
 		  if(!grunt.file.exists(path)){
 			  var errorMessage = grunt.template.process(CONSTANTS.ERROR_MESSAGES.missingFolders, {data: {directory: path}});
   
@@ -453,7 +452,7 @@ module.exports = function(grunt) {
 	                                    '!src/scripts/bundles/*.js'
 	                                  ]);
 	  
-	  grunt.log.writeln(testFiles.length + ' found.')
+	  grunt.log.writeln(testFiles.length + ' found.');
 	  grunt.log.writeln(srcFiles.length + ' expected.');
 	  
 	  if(testFiles.length != srcFiles.length && !cliOptions['force-no-tests']) {

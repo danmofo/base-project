@@ -36,7 +36,8 @@ module.exports = {
     ].join(''),
     'invalidDest': 'The specified destination folder "<%= directory %>" doesnt exist.',
     'missingFolders': 'Your src folder is missing a folder (<%= directory %>), things may not work as you expect, investigate!',
-    'testCountMismatch': 'Expected <%= expected %> tests but only found <%= found %>. Files were <%= files %>.'
+    'testCountMismatch': 'Expected <%= expected %> tests but only found <%= found %>. Files were <%= files %>.',
+    'missingCommand': 'You need to specify a command! Example commands: dev, build, optmise-images, screenshots, perf'
 
   },
 
