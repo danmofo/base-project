@@ -25,14 +25,14 @@ module.exports = function(grunt) {
     'no-scripts': grunt.option('no-scripts'),
     'force-no-tests': grunt.option('force-no-tests')
   };
-  
+
   if(grunt.option.flags().length) {
 	  grunt.log.writeln('Found CLI options: ');
 	  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));
   } else {
 	  grunt.log.writeln('Using default options.');
   }
-    
+
   // Show time taken for each task
   require('time-grunt')(grunt);
 
@@ -42,8 +42,8 @@ module.exports = function(grunt) {
 
   // Config
   grunt.initConfig({
-	srcDirectory: cliOptions.src,
-	destDirectory: cliOptions.dest,
+	 srcDirectory: cliOptions.src,
+	 destDirectory: cliOptions.dest,
     filerev: {
       prod: {
         src: ['prod/styles/css/*.css', 'prod/scripts/bundles/*.js', 'prod/images/*.jpg']
@@ -113,7 +113,7 @@ module.exports = function(grunt) {
           expand: true,
           cwd: '<%= srcDirectory %>/scripts/',
           src: ['*.js', '!_*.js'],
-          dest: '<%= srctDirectory %>/scripts/bundles/',
+          dest: '<%= srcDirectory %>/scripts/bundles/',
           ext: '-bundle.js'
         }]
       },
@@ -324,7 +324,7 @@ module.exports = function(grunt) {
    *  Task registration
    */
   grunt.registerTask('default', ['help']);
-  
+
   grunt.registerTask('help', function() {
 	  grunt.fail.warn(CONSTANTS.ERROR_MESSAGES.missingCommand);
   });
@@ -386,11 +386,11 @@ module.exports = function(grunt) {
     'pagespeed:desktop',
     'pagespeed:mobile'
   ]);
-  
+
   // Optimise images task, this is for optimising images by making their size smaller with sacrificing
   // too much quality.
   grunt.registerTask('optimise-images', [
-     'imagemin:squash'                                    
+     'imagemin:squash'
   ]);
 
   // Convenience task groups - this allows us to add more related processing in these blocks
@@ -403,58 +403,58 @@ module.exports = function(grunt) {
   grunt.registerTask('createScripts', [
     'browserify:dev'
   ]);
-  
+
   // For testing
   grunt.registerTask('scratchpad', function() {
 	 grunt.log.writeln('hello world!');
   });
-  
+
   // Dummy task to use when we build task lists dynamically!
   grunt.registerTask('_dummyTask', function() { grunt.log.writeln('_dummyTask'); });
 
   // Validate the flag values (make sure folders exist and that folder structure looks usable)
   grunt.registerTask('validateFlags', function() {
-	  
+
 	  // Check src exists
 	  if(!grunt.file.exists(cliOptions.src)) {
 		  grunt.fail.fatal(
 	        grunt.template.process(CONSTANTS.ERROR_MESSAGES.invalidSrc, {directory: cliOptions.src})
 		  );
 	  }
-	  
+
 	  // Check dest exists
 	  if(!grunt.file.exists(cliOptions.dest)) {
 		  grunt.fail.fatal(
 	        grunt.template.process(CONSTANTS.ERROR_MESSAGES.invalidDest, {data: {directory: cliOptions.dest}})
 	      );
 	  }
-	  
+
 	  // Check src has 'web' like folders, it can flag problems with your project setup
 	  CONSTANTS.REQUIRED_FOLDERS.forEach(function(folder) {
 		  var path = cliOptions.src + '/' + folder;
 		  if(!grunt.file.exists(path)){
 			  var errorMessage = grunt.template.process(CONSTANTS.ERROR_MESSAGES.missingFolders, {data: {directory: path}});
-  
+
 			  grunt.fail.fatal(errorMessage);
 		  }
 	  });
   });
-  
+
   // Generally each file should have a test to accompany it, we warn if that isn't the case as it promotes
   // crappy coding (not writing tests). If a test doesn't make sense, create an empty test file.
-  
+
   // Angular tests are not implemented yet so we filter those out (same with bundles)
   grunt.registerTask('validateTests', function() {
 	  var testFiles = grunt.file.expand('src/tests/**/*.test.js');
 	  var srcFiles = grunt.file.expand([
-	                                    'src/scripts/**/*.js', 
+	                                    'src/scripts/**/*.js',
 	                                    '!src/scripts/angular/**/*.js',
 	                                    '!src/scripts/bundles/*.js'
 	                                  ]);
-	  
+
 	  grunt.log.writeln(testFiles.length + ' found.');
 	  grunt.log.writeln(srcFiles.length + ' expected.');
-	  
+
 	  if(testFiles.length != srcFiles.length && !cliOptions['force-no-tests']) {
 		  var errorMessage = grunt.template.process(CONSTANTS.ERROR_MESSAGES.testCountMismatch, {data: {
 			  found: testFiles.length,
@@ -462,9 +462,9 @@ module.exports = function(grunt) {
 			  files: srcFiles
 		  }});
 		  grunt.fail.fatal(errorMessage);
-	  } 	  
+	  }
   });
-  
+
   // Run linter and tests, also check test count against file count in the `src/scripts` directory.
   grunt.registerTask('isProdReady', ['validateTests', 'jshint:dev', 'pagespeed:desktop', 'pagespeed:mobile']);
 };
