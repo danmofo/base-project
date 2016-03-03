@@ -22,7 +22,8 @@ module.exports = function(grunt) {
     'src': grunt.option('src') || CONSTANTS.DEFAULT_SRC_DIRECTORY,
     'dest': grunt.option('dest') || CONSTANTS.DEFAULT_DEST_DIRECTORY,
     'no-tests' : grunt.option('no-tests'),
-    'no-scripts': grunt.option('no-scripts')
+    'no-scripts': grunt.option('no-scripts'),
+    'force-no-tests': grunt.option('force-no-tests')
   };
   
   if(grunt.option.flags().length) {
@@ -251,6 +252,7 @@ module.exports = function(grunt) {
         }
       },
       dev: [
+        'Gruntfile.js',
         '<%= srcDirectory %>/scripts/**/*.js',
         '!<%= srcDirectory %>/scripts/bundles/*.js'
       ]
@@ -282,15 +284,26 @@ module.exports = function(grunt) {
       }
     },
     pagespeed: {
-      test: {
+      desktop: {
         options: {
-          nokey: true,
-          strategy: 'desktop',
-          threshold: 40,
-          url: 'www.giveasyoulive.com',
-          locale: 'en_GB'
+            nokey: true,
+            threshold: 40,
+            url: 'www.giveasyoulive.com',
+            locale: 'en_GB',
+            strategy: 'desktop'
+
         }
-      }
+      },
+      mobile: {
+          options: {
+              nokey: true,
+              threshold: 40,
+              url: 'www.giveasyoulive.com',
+              locale: 'en_GB',
+              strategy: 'mobile'
+
+          }
+        }
     },
     imagemin: {
     	squash: {
@@ -370,7 +383,8 @@ module.exports = function(grunt) {
 
   // Perf task, this is for giving a general overview of performance on the website
   grunt.registerTask('perf', [
-    'pagespeed:test'
+    'pagespeed:desktop',
+    'pagespeed:mobile'
   ]);
   
   // Optimise images task, this is for optimising images by making their size smaller with sacrificing
@@ -425,6 +439,33 @@ module.exports = function(grunt) {
 			  grunt.fail.fatal(errorMessage);
 		  }
 	  });
-
   });
+  
+  // Generally each file should have a test to accompany it, we warn if that isn't the case as it promotes
+  // crappy coding (not writing tests). If a test doesn't make sense, create an empty test file.
+  
+  // Angular tests are not implemented yet so we filter those out (same with bundles)
+  grunt.registerTask('validateTests', function() {
+	  var testFiles = grunt.file.expand('src/tests/**/*.test.js');
+	  var srcFiles = grunt.file.expand([
+	                                    'src/scripts/**/*.js', 
+	                                    '!src/scripts/angular/**/*.js',
+	                                    '!src/scripts/bundles/*.js'
+	                                  ]);
+	  
+	  grunt.log.writeln(testFiles.length + ' found.')
+	  grunt.log.writeln(srcFiles.length + ' expected.');
+	  
+	  if(testFiles.length != srcFiles.length && !cliOptions['force-no-tests']) {
+		  var errorMessage = grunt.template.process(CONSTANTS.ERROR_MESSAGES.testCountMismatch, {data: {
+			  found: testFiles.length,
+			  expected: srcFiles.length,
+			  files: srcFiles
+		  }});
+		  grunt.fail.fatal(errorMessage);
+	  } 	  
+  });
+  
+  // Run linter and tests, also check test count against file count in the `src/scripts` directory.
+  grunt.registerTask('isProdReady', ['validateTests', 'jshint:dev', 'pagespeed:desktop', 'pagespeed:mobile']);
 };

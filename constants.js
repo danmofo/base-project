@@ -35,7 +35,9 @@ module.exports = {
   	  ' to use existing sources.'
     ].join(''),
     'invalidDest': 'The specified destination folder "<%= directory %>" doesnt exist.',
-    'missingFolders': 'Your src folder is missing a folder (<%= directory %>), things may not work as you expect, investigate!'
+    'missingFolders': 'Your src folder is missing a folder (<%= directory %>), things may not work as you expect, investigate!',
+    'testCountMismatch': 'Expected <%= expected %> tests but only found <%= found %>. Files were <%= files %>.'
+
   },
 
   // Regular expressions

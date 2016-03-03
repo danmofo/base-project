@@ -9,6 +9,7 @@
   "author": "danmofo",
   "license": "ISC",
   "devDependencies": {
+    "array-difference": "0.0.1",
     "autoprefixer": "^6.3.3",
     "cssnano": "^3.5.2",
     "grunt": "^0.4.5",

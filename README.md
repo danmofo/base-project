@@ -133,3 +133,8 @@ Useful links:
 
 - List of PostCSS plugins: [https://github.com/postcss/postcss](https://github.com/postcss/postcss)
 - Hub ([project link](https://hub.github.com/)), `brew install hub`, `hub browse`
+
+Troubleshooting
+---
+
+Sometimes when you update, and run `npm install` to get the lastest dependencies you might get problems. IF this is the case, `rm -rf ./node_modules/` in the repository directory and run a clean `npm install`.
