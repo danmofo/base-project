@@ -23,7 +23,8 @@ module.exports = function(grunt) {
     'dest': grunt.option('dest') || CONSTANTS.DEFAULT_DEST_DIRECTORY,
     'no-tests' : grunt.option('no-tests'),
     'no-scripts': grunt.option('no-scripts'),
-    'force-no-tests': grunt.option('force-no-tests')
+    'force-no-tests': grunt.option('force-no-tests'),
+    'include-angular-apps': grunt.option('include-angular-apps')
   };
 
   if(grunt.option.flags().length) {
@@ -46,14 +47,18 @@ module.exports = function(grunt) {
 	 destDirectory: cliOptions.dest,
     filerev: {
       prod: {
-        src: ['prod/styles/css/*.css', 'prod/scripts/bundles/*.js', 'prod/images/*.jpg']
+        src: [
+          'prod/styles/css/*.css',
+          'prod/scripts/bundles/**/*.js',
+          'prod/images/*.jpg'
+        ]
       }
     },
     userev: {
       prod: {
         src: [
-          '<%= destDirectory %>/velocity/index.html',
-          '<%= destDirectory %>/velocity/general.vm',
+          '<%= destDirectory %>/velocity/*.html',
+          '<%= destDirectory %>/velocity/*.vm',
           '<%= destDirectory %>/styles/css/*.css',
           '<%= destDirectory %>/scripts/bundles/*.js'
         ],
@@ -112,7 +117,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: '<%= srcDirectory %>/scripts/',
-          src: ['*.js', '!_*.js'],
+          src: ['*.js', '!_*.js', 'angular/search-app/app.js'],
           dest: '<%= srcDirectory %>/scripts/bundles/',
           ext: '-bundle.js'
         }]
@@ -122,7 +127,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: '<%= srcDirectory %>/scripts/',
-          src: ['*.js', '!_*.js'],
+          src: ['*.js', '!_*.js', 'angular/search-app/app.js'],
           dest: '<%= destDirectory %>/scripts/bundles/',
           ext: '-bundle.js'
         }]
@@ -162,7 +167,7 @@ module.exports = function(grunt) {
       devScripts: {
         files: [
           '<%= srcDirectory %>/scripts/**/**',
-          '!<%= srcDirectory %>/scripts/bundles/**/**'
+          '!<%= srcDirectory %>/scripts/bundles/**'
         ],
         tasks: [
           'browserify:dev',
@@ -201,7 +206,7 @@ module.exports = function(grunt) {
           'watch:devScriptsWithTests',
           'karma:dev'
         ]
-      }
+      },
     },
     uglify: {
       prod: {
@@ -254,7 +259,7 @@ module.exports = function(grunt) {
       dev: [
         'Gruntfile.js',
         '<%= srcDirectory %>/scripts/**/*.js',
-        '!<%= srcDirectory %>/scripts/bundles/*.js'
+        '!<%= srcDirectory %>/scripts/bundles/**/*.js'
       ]
     },
     karma: {
@@ -325,17 +330,17 @@ module.exports = function(grunt) {
    */
   grunt.registerTask('default', ['help']);
 
-  grunt.registerTask('help', function() {
+  grunt.registerTask('help', CONSTANTS.TASK_DESCRIPTIONS.help, function() {
 	  grunt.fail.warn(CONSTANTS.ERROR_MESSAGES.missingCommand);
   });
 
   // Setup tasks, these must be ran before you can work on anything
-  grunt.registerTask('setup', [
+  grunt.registerTask('setup', CONSTANTS.TASK_DESCRIPTIONS.setup, [
     'validateFlags'
   ]);
 
   // Development task, this is for when you're working on a project
-  grunt.registerTask('dev', [
+  grunt.registerTask('dev', CONSTANTS.TASK_DESCRIPTIONS.dev, [
       // Set directories / API keys
     'setup',
     // Compile less & postcss css files
@@ -351,7 +356,7 @@ module.exports = function(grunt) {
   ]);
 
   // Production task, this is for when you want to create a production-ready build
-  grunt.registerTask('build', [
+  grunt.registerTask('build', CONSTANTS.TASK_DESCRIPTIONS.build, [
       // Set directories / API keys
     'setup',
     // Clean production folder if anything is in there already
@@ -377,43 +382,43 @@ module.exports = function(grunt) {
   ]);
 
   // Screenshot task, this is for testing purposes
-  grunt.registerTask('screenshots', [
+  grunt.registerTask('screenshots', CONSTANTS.TASK_DESCRIPTIONS.screenshots, [
     'pageres:screenshot'
   ]);
 
   // Perf task, this is for giving a general overview of performance on the website
-  grunt.registerTask('perf', [
+  grunt.registerTask('perf', CONSTANTS.TASK_DESCRIPTIONS.perf, [
     'pagespeed:desktop',
     'pagespeed:mobile'
   ]);
 
   // Optimise images task, this is for optimising images by making their size smaller with sacrificing
   // too much quality.
-  grunt.registerTask('optimise-images', [
+  grunt.registerTask('optimise-images', CONSTANTS.TASK_DESCRIPTIONS['optimise-images'], [
      'imagemin:squash'
   ]);
 
   // Convenience task groups - this allows us to add more related processing in these blocks
   // without having to touch anything else in the build
-  grunt.registerTask('createCss', [
+  grunt.registerTask('createCss', CONSTANTS.TASK_DESCRIPTIONS.createCss, [
     'less:dev',
     'postcss:dev'
   ]);
 
-  grunt.registerTask('createScripts', [
+  grunt.registerTask('createScripts', CONSTANTS.TASK_DESCRIPTIONS.createScripts, [
     'browserify:dev'
   ]);
 
   // For testing
-  grunt.registerTask('scratchpad', function() {
+  grunt.registerTask('scratchpad', CONSTANTS.TASK_DESCRIPTIONS.scratchpad, function() {
 	 grunt.log.writeln('hello world!');
   });
 
   // Dummy task to use when we build task lists dynamically!
-  grunt.registerTask('_dummyTask', function() { grunt.log.writeln('_dummyTask'); });
+  grunt.registerTask('_dummyTask', 'DONT USE THIS', function() { grunt.log.writeln('_dummyTask'); });
 
   // Validate the flag values (make sure folders exist and that folder structure looks usable)
-  grunt.registerTask('validateFlags', function() {
+  grunt.registerTask('validateFlags', CONSTANTS.TASK_DESCRIPTIONS.validateFlags, function() {
 
 	  // Check src exists
 	  if(!grunt.file.exists(cliOptions.src)) {
@@ -444,7 +449,7 @@ module.exports = function(grunt) {
   // crappy coding (not writing tests). If a test doesn't make sense, create an empty test file.
 
   // Angular tests are not implemented yet so we filter those out (same with bundles)
-  grunt.registerTask('validateTests', function() {
+  grunt.registerTask('validateTests', CONSTANTS.TASK_DESCRIPTIONS.validateTests, function() {
 	  var testFiles = grunt.file.expand('src/tests/**/*.test.js');
 	  var srcFiles = grunt.file.expand([
 	                                    'src/scripts/**/*.js',
@@ -466,5 +471,5 @@ module.exports = function(grunt) {
   });
 
   // Run linter and tests, also check test count against file count in the `src/scripts` directory.
-  grunt.registerTask('isProdReady', ['validateTests', 'jshint:dev', 'pagespeed:desktop', 'pagespeed:mobile']);
+  grunt.registerTask('isProdReady', CONSTANTS.TASK_DESCRIPTIONS.isProdReady, ['validateTests', 'jshint:dev', 'pagespeed:desktop', 'pagespeed:mobile']);
 };

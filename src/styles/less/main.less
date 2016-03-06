@@ -5,21 +5,22 @@
 @import '_variables';
 @import 'components/box';
 
-* {
+.foobar * {
   font-size: 1rem;
   box-sizing: border-box;
-  display: flex;
 }
 
-p {
+
+.foobar p {
 	color: green;
   text-shadow: 0 0 0 #000;
   border-radius: 0;
+  display: flex;
 }
 
-div,
-a,
-span {
+.foobar div,
+.foobar a,
+.foobar span {
   display: block;
   background: url('/images/link.jpg')
 }
