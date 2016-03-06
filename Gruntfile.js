@@ -30,7 +30,7 @@ module.exports = function(grunt) {
   if(grunt.option.flags().length) {
 	  if(!utils.cliContainsFlag('--color')) {
 		  grunt.log.writeln('Found CLI options: ');
-		  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));		  
+		  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));
 	  }
   } else {
 	  grunt.log.writeln('Using default options.');
@@ -219,7 +219,7 @@ module.exports = function(grunt) {
         files: [{
             expand: true,
             cwd: '<%= destDirectory %>/scripts/bundles/',
-            src: '*.js',
+            src: '**/*.js',
             dest: '<%= destDirectory %>/scripts/bundles/',
             ext: '.js'
         }]
@@ -233,7 +233,8 @@ module.exports = function(grunt) {
           expand: true,
           cwd: '<%= srcDirectory %>/',
           src: [
-            'velocity/**/**'
+            'velocity/**/**',
+            'scripts/angular/search-app/views/**/*.html'
           ],
           dest: '<%= destDirectory %>/'
         }]
