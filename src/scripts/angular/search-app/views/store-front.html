@@ -1,0 +1,16 @@
+<div class="store-front">
+	<h1 class="store-front__title">{{ vm.title }}</h1>
+	<p class="store-front__intro">Welcome to the wonderful store front..current items in stock:</p>
+
+  <div ng-repeat="product in vm.products" class="store-item">
+    <div class="store-item__info">
+      {{ product.name }}
+      <span class="subtle">{{ product.price | currency }}</span>
+    </div>
+    <div class="store-item__action">
+    <button ng-click="vm.addItemToBasket(product)" class="button button--add">Add</button>
+  </div>
+  </div>
+
+	<basket items="vm.items"></basket>
+</div>

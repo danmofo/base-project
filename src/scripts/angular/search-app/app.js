@@ -5,7 +5,7 @@ var angular = require('angular');
 var CONSTANTS = require('./_constants');
 
 angular
-  .module('myApp', [])
+  .module(CONSTANTS.APP_NAMESPACE, [])
   .service('Api', ['$log', function($log) {
     return {
       get: function(url) {
@@ -30,13 +30,50 @@ angular
       }
     };
   }])
-  .component('test', {
-    bindings: {
-      username: '@'
-    },
-    controller: ['Api', function(Api) {
-      this.items = Api.get('/api/users/1234');
-    }],
-    controllerAs: 'vm',
-    templateUrl: '/scripts/angular/search-app/views/basket.html'
-  });
+  .component('storefront', {
+	  bindings: {
+		  title: '@'
+	  },
+	  controller: ['Api', function(Api) {
+		  this.products = Api.get('/api/products/1234');
+		  this.items = Api.get('/api/users/1234');
+
+		  this.addItemToBasket = addItemToBasket;
+
+		  function addItemToBasket(product){
+			  console.log('Adding ', product);
+			  this.items.push(product);
+		  }
+
+	  }],
+	  controllerAs: 'vm',
+	  templateUrl: '/scripts/angular/search-app/views/store-front.html'
+	})
+  .component('basket', {
+	    bindings: {
+	        items: '<'
+	      },
+	      controller: [function(Api, $scope) {
+	        this.removeItem = removeItem;
+	        this.total = 0;
+	        this.recalculateTotal = recalculateTotal;
+
+	        function recalculateTotal() {
+	        	var newTotal = 0;
+
+	        	this.items.forEach(function(item) {
+	        		newTotal += item.price;
+	        	});
+
+	        	this.total = newTotal;
+
+	        	return newTotal;
+	        }
+
+	        function removeItem(idx) {
+	        	this.items.splice(idx, 1);
+	        }
+	      }],
+	      controllerAs: 'vm',
+	      templateUrl: '/scripts/angular/search-app/views/basket.html'
+	    });

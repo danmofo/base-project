@@ -1,7 +1,22 @@
 module.exports = {
   prettyifyJson: prettifyJson,
-  getConcurrentTask: getConcurrentTask
+  getConcurrentTask: getConcurrentTask,
+  cliContainsFlag: cliContainsFlag
 };
+
+
+function cliContainsFlag(flagToFind) {
+	var found = false;
+	var grunt = require('grunt');
+	
+	grunt.option.flags().forEach(function(f) {
+		if(f === flagToFind) {
+			found = true;
+		}
+	});
+
+	return found;
+}
 
 /**
  * Prettify an object for debugging

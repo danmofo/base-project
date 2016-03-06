@@ -28,8 +28,10 @@ module.exports = function(grunt) {
   };
 
   if(grunt.option.flags().length) {
-	  grunt.log.writeln('Found CLI options: ');
-	  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));
+	  if(!utils.cliContainsFlag('--color')) {
+		  grunt.log.writeln('Found CLI options: ');
+		  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));		  
+	  }
   } else {
 	  grunt.log.writeln('Using default options.');
   }
@@ -111,7 +113,7 @@ module.exports = function(grunt) {
       dev: {
         options: {
           browserifyOptions: {
-            debug: true
+            debug: false
           }
         },
         files: [{

@@ -5,6 +5,94 @@
 @import '_variables';
 @import 'components/box';
 
+html {
+  font-family: 'Arial';
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+
+.subtle {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.store-front {
+
+}
+
+.store-front__title {
+  font-size: 22px;
+}
+
+.store-front__intro {
+  font-size: 12px;
+}
+
+.store-item {
+  display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #ccc;
+  overflow: hidden;
+
+  &__info {
+    width: 100px;
+    float: left;
+  }
+
+  &__action {
+    float: left;
+    margin-left: 20px;
+  }
+}
+
+.shopping-basket {
+  font-size: 14px;
+}
+
+.shopping-basket__item {
+
+}
+
+.basket-item {
+
+}
+
+.basket-item__name {
+
+}
+
+.basket-item__price {
+
+}
+
+
+
+.button {
+  padding: 10px 20px;
+  border: 0;
+  color: #fff;
+  font-size: 14px;
+  font-family: 'Arial';
+
+  &:hover {
+    cursor: opinter;
+  }
+}
+
+.button--add {
+  background-color: #1C8976;
+  border-bottom: 2px solid darken(#1C8976, 5%);
+}
+
+.button--remove {
+  background-color: #CB2D26;
+  border-bottom: 2px solid darken(#CB2D26, 5%);
+}
+
 .foobar * {
   font-size: 1rem;
   box-sizing: border-box;

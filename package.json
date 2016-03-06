@@ -9,6 +9,7 @@
   "author": "danmofo",
   "license": "ISC",
   "devDependencies": {
+    "angular": "^1.5.0",
     "array-difference": "0.0.1",
     "autoprefixer": "^6.3.3",
     "cssnano": "^3.5.2",

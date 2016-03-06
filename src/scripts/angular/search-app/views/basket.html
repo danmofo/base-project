@@ -1,8 +1,11 @@
 <div class="shopping-basket">
-  <h1>List of items: </h1>
-  <div ng-repeat="item in vm.items">
-    <p><strong>ID: </strong> {{ item.id }}</p>
-    <p><strong>Name: </strong> {{ item.name }}</p>
-    <p><strong>Price: </strong> {{ item.price }}</p>
+  <p>You have {{ vm.items.length }} items in your basket. Totaling {{ vm.recalculateTotal() | currency }} <a ng-init="vm.expando = true" ng-click="vm.expando = !vm.expando">toggle detail</a></p>
+
+  <div ng-repeat="item in vm.items" ng-show="vm.expando" class="shopping-basket__item">
+    <div class="basket-item">
+      <p class="basket-item__name"><strong>Name: </strong> {{ item.name }}</p>
+      <p class="basket-item__price"><strong>Price: </strong> {{ item.price | currency }}</p>
+     	<button ng-click="vm.removeItem($index)" class="button button--remove">Remove from basket</button>
+   </div>
   </div>
 </div>
