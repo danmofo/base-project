@@ -30488,6 +30488,30 @@ angular
 	  controllerAs: 'vm',
 	  templateUrl: '/scripts/angular/search-app/views/store-front.html'
 	})
+  .component('basketsummary', {
+    bindings: {
+      items: '<',
+      minimal: '<'
+    },
+    controller: [function() {
+      this.total = 0;
+      this.recalculateTotal = recalculateTotal;
+
+      function recalculateTotal() {
+          var newTotal = 0;
+
+          this.items.forEach(function(item) {
+            newTotal += item.price;
+          });
+
+          this.total = newTotal;
+
+          return newTotal;
+        }
+    }],
+    controllerAs: 'vm',
+    template: '<div>{{ vm.items.length }} items, <div ng-if="!vm.minimal">{{ vm.recalculateTotal() | currency }}</div></div>'
+  })
   .component('basket', {
 	    bindings: {
 	        items: '<'

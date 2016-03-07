@@ -2,6 +2,10 @@
 	<h1 class="store-front__title">{{ vm.title }}</h1>
 	<p class="store-front__intro">Welcome to the wonderful store front..current items in stock:</p>
 
+  <basketsummary items="vm.items"></basketsummary>
+  <basketsummary items="vm.items" minimal="true"></basketsummary>
+  <basketsummary items="vm.items"></basketsummary>
+
   <div ng-repeat="product in vm.products" class="store-item">
     <div class="store-item__info">
       {{ product.name }}
