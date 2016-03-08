@@ -74,6 +74,12 @@ module.exports = function(grunt) {
       }
     },
     clean: {
+      options: {
+        // Since srcDirectory / destDirectory can be outside Grunt's directory, we need to
+        // force deletion of files.
+        force: true
+      },
+      bundles: ['<%= srcDirectory %>/scripts/bundles/'],
       prod: ['<%= destDirectory %>'],
       temp: ['.grunt-temp/']
     },
@@ -373,6 +379,8 @@ module.exports = function(grunt) {
     'setup',
     // Clean production folder if anything is in there already
     'clean:prod',
+    // Clean any stray development bundles (for example if you rename a js file, the old version sticks around unless it's removed )
+    'clean:bundles',
     // Minify images
     'optimise-images',
     // Copy all static files across (minus css and js)
@@ -418,6 +426,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('createScripts', CONSTANTS.TASK_DESCRIPTIONS.createScripts, [
+    'clean:bundles',
     'browserify:dev'
   ]);
 
