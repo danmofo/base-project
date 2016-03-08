@@ -367,10 +367,7 @@ module.exports = function(grunt) {
     // you may not have created scripts from the sources before.
     'createScripts',
     // Watch ALL less / js files for changes
-    utils.getConcurrentTask({
-    	'no-tests':cliOptions['no-tests'],
-    	'no-scripts':cliOptions['no-scripts']
-    })
+    utils.getConcurrentTask(cliOptions)
   ]);
 
   // Production task, this is for when you want to create a production-ready build
@@ -379,7 +376,7 @@ module.exports = function(grunt) {
     'setup',
     // Clean production folder if anything is in there already
     'clean:prod',
-    // Clean any stray development bundles (for example if you rename a js file, the old version sticks around unless it's removed )
+    // Clean any stray development bundles since our production build is built from here
     'clean:bundles',
     // Minify images
     'optimise-images',
