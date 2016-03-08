@@ -50,9 +50,9 @@ module.exports = function(grunt) {
     filerev: {
       prod: {
         src: [
-          'prod/styles/css/*.css',
-          'prod/scripts/bundles/**/*.js',
-          'prod/images/*.jpg'
+          '<%= destDirectory %>/styles/css/*.css',
+          '<%= destDirectory %>/scripts/bundles/**/*.js',
+          '<%= destDirectory %>/images/*.jpg'
         ]
       }
     },
@@ -119,7 +119,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: '<%= srcDirectory %>/scripts/',
-          src: ['*.js', '!_*.js', 'angular/search-app/app.js'],
+          src: ['*.js', '!_*.js', 'angular/**/app.js'],
           dest: '<%= srcDirectory %>/scripts/bundles/',
           ext: '-bundle.js'
         }]
@@ -129,7 +129,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: '<%= srcDirectory %>/scripts/',
-          src: ['*.js', '!_*.js', 'angular/search-app/app.js'],
+          src: ['*.js', '!_*.js', 'angular/**/app.js'],
           dest: '<%= destDirectory %>/scripts/bundles/',
           ext: '-bundle.js'
         }]
@@ -187,7 +187,16 @@ module.exports = function(grunt) {
           'jshint:dev',
           'karma:dev:run'
         ]
-      }
+      },
+      // devViews: {
+      //   files: [
+      //     '<%= srcDirectory %>/scripts/angular/**/views/*.html'
+      //   ],
+      //   tasks: [
+      //     'browserify:dev',
+      //     'jshint:dev'
+      //   ]
+      // }
     },
     concurrent: {
      options: {
@@ -234,7 +243,7 @@ module.exports = function(grunt) {
           cwd: '<%= srcDirectory %>/',
           src: [
             'velocity/**/**',
-            'scripts/angular/search-app/views/**/*.html'
+            'scripts/angular/**/views/**/*.html'
           ],
           dest: '<%= destDirectory %>/'
         }]
