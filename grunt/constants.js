@@ -1,33 +1,40 @@
 /**
- *  Constants used in the Grunt script, including:
- *  - Error mesSages,
- *  - Default file paths
- *  - ???
+ *  Constants used in the Grunt script.
  *
  *  @author danielmoffat
  */
 
 module.exports = {
 
-  // Human readable task descriptions
-  TASK_DESCRIPTIONS: {
-    help: 'Use grunt --help',
-    setup: 'Runs some setup tasks',
-    dev: 'For developing a project',
-    build: 'For a full production build',
-    screenshots: 'Take some screenshots for testing',
-    perf: 'Run some performance analysis',
-    'optimise-images': 'Optimise images',
-    createCss: 'Run CSS compilation steps',
-    createScripts: 'Run JS compilation steps',
-    validateFlags: 'Checks the command-line flags given are OK',
-    validateTests: 'Checks each source file and makes sure it has a matching test file.',
-    isProdReady: 'Lints, tests and runs website through page speed.'
+  // Directory glob patterns, todo: add directory glob patterns...
+  DIRECTORIES: {
+
   },
 
-  // Default directories
-  DEFAULT_SRC_DIRECTORY: './src',
-  DEFAULT_DEST_DIRECTORY: './prod',
+  // Human readable task descriptions
+  TASK_DESCRIPTIONS: {
+    help:               'Use grunt --help',
+    setup:              'Runs some setup tasks',
+    dev:                'For developing a project',
+    build:              'For a full production build',
+    screenshots:        'Take some screenshots for testing',
+    perf:               'Run some performance analysis',
+    'optimise-images':  'Optimise images',
+    createCss:          'Run CSS compilation steps',
+    createScripts:      'Run JS compilation steps',
+    validateFlags:      'Checks the command-line flags given are OK',
+    validateTests:      'Checks each source file and makes sure it has a matching test file.',
+    isProdReady:        'Lints, tests and runs website through page speed.'
+  },
+
+  CLI_DEFAULTS: {
+    src: './src',
+    dest: './prod',
+  },
+
+  CLI_BLACKLIST: [
+    '--color'
+  ],
 
   // Required folders in the src directory, generally just a styles / scripts / images will do, this
   // implies it's some sort of web project that this may work in
@@ -55,7 +62,6 @@ module.exports = {
     'missingFolders': 'Your src folder is missing a folder (<%= directory %>), things may not work as you expect, investigate!',
     'testCountMismatch': 'Expected <%= expected %> tests but only found <%= found %>. Files were <%= files %>.',
     'missingCommand': 'You need to specify a command! For a list of commands use grunt --help!'
-
   },
 
   // Regular expressions

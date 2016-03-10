@@ -4,10 +4,11 @@
  *  @author: danielmoffat
  */
 
-var CONSTANTS = require('./constants');
-var utils = require('./grunt-utils');
+var CONSTANTS = require('./grunt/constants');
+var utils = require('./grunt/utils');
 
 module.exports = function(grunt) {
+
   // Allow user to specify several flags using a cli to exclude / include certain tasks,
   // because the extra tasks needed for running tests (watch, karma, jasmine..)
   // can slow down development.
@@ -17,24 +18,9 @@ module.exports = function(grunt) {
   //
   // Example:
   // grunt dev --src=src --dest=prod --no-tests --no-scripts
-  //
-  var cliOptions = {
-    'src': grunt.option('src') || CONSTANTS.DEFAULT_SRC_DIRECTORY,
-    'dest': grunt.option('dest') || CONSTANTS.DEFAULT_DEST_DIRECTORY,
-    'no-tests' : grunt.option('no-tests'),
-    'no-scripts': grunt.option('no-scripts'),
-    'force-no-tests': grunt.option('force-no-tests'),
-    'include-angular-apps': grunt.option('include-angular-apps')
-  };
+  var cliOptions = utils.parseCliOptions();
 
-  if(grunt.option.flags().length) {
-	  if(!utils.cliContainsFlag('--color')) {
-		  grunt.log.writeln('Found CLI options: ');
-		  grunt.log.writeln(utils.prettyifyJson(cliOptions, 2));
-	  }
-  } else {
-	  grunt.log.writeln('Using default options.');
-  }
+  utils.prettyPrintCliArguments();
 
   // Show time taken for each task
   require('time-grunt')(grunt);
