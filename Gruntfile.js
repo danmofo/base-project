@@ -173,9 +173,17 @@ module.exports = function(grunt) {
           '!<%= srcDirectory %>/scripts/bundles/**'
         ],
         tasks: [
-          (function() {
-            return cliOptions['chrome-extension'] ? 'browserify:devChromeExtension' : 'browserify:dev';
-          })(),
+          'browserify:dev',
+          'jshint:dev'
+        ]
+      },
+      devChromeExtension: {
+        files: [
+          '<%= srcDirectory %>/scripts/**/**',
+          '!<%= srcDirectory %>/scripts/bundles/**'
+        ],
+        tasks: [
+          'browserify:devChromeExtension',
           'jshint:dev'
         ]
       },
@@ -203,6 +211,12 @@ module.exports = function(grunt) {
         tasks: [
           'watch:devStyles',
           'watch:devScripts',
+        ]
+      },
+      watchChromeExtension: {
+        tasks: [
+          'watch:devStyles',
+          'watch:devChromeExtension'
         ]
       },
       watchWithTests: {
@@ -254,7 +268,7 @@ module.exports = function(grunt) {
     		  dest: '<%= destDirectory %>/images/'
     	  }]
       },
-      chromeImages: {
+      chrome: {
         files: [{
           expand: true,
           cwd: '<%= srcDirectory %>/images/optimised/',
@@ -373,10 +387,10 @@ module.exports = function(grunt) {
   grunt.registerTask('devChromeExtension', CONSTANTS.TASK_DESCRIPTIONS.devChromeExtension, [
     'setup',
     'createCss',
-    'createScripts',
+    'createChromeExtension',
     'optimise-images',
-    'copy:chromeImages',
-    utils.getConcurrentTask()
+    'copy:chrome',
+    'concurrent:watchChromeExtension'
   ]);
 
   // Production task, this is for when you want to create a production-ready build
@@ -433,7 +447,12 @@ module.exports = function(grunt) {
 
   grunt.registerTask('createScripts', CONSTANTS.TASK_DESCRIPTIONS.createScripts, [
     'clean:bundles',
-    cliOptions['chrome-extension'] ? 'browserify:devChromeExtension' : 'browserify:dev'
+    'browserify:dev'
+  ]);
+
+  grunt.registerTask('createChromeExtension', CONSTANTS.TASK_DESCRIPTIONS.createChromeExtension, [
+    'clean:bundles',
+    'browserify:devChromeExtension'
   ]);
 
   // For testing
