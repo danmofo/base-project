@@ -116,6 +116,15 @@ module.exports = function(grunt) {
           ext: '-bundle.js'
         }]
       },
+      devChromeExtension: {
+        options: {
+          browserifyOptions: {
+            debug: false
+          }
+        },
+        src: '<%= srcDirectory %>/scripts/main.js',
+        dest: '<%= srcDirectory %>/extension/background.js'
+      },
       prod: {
         options: {},
         files: [{
@@ -164,7 +173,9 @@ module.exports = function(grunt) {
           '!<%= srcDirectory %>/scripts/bundles/**'
         ],
         tasks: [
-          'browserify:dev',
+          (function() {
+            return cliOptions['chrome-extension'] ? 'browserify:devChromeExtension' : 'browserify:dev';
+          })(),
           'jshint:dev'
         ]
       },
@@ -179,16 +190,7 @@ module.exports = function(grunt) {
           'jshint:dev',
           'karma:dev:run'
         ]
-      },
-      // devViews: {
-      //   files: [
-      //     '<%= srcDirectory %>/scripts/angular/**/views/*.html'
-      //   ],
-      //   tasks: [
-      //     'browserify:dev',
-      //     'jshint:dev'
-      //   ]
-      // }
+      }
     },
     concurrent: {
      options: {
@@ -251,6 +253,18 @@ module.exports = function(grunt) {
     		  ],
     		  dest: '<%= destDirectory %>/images/'
     	  }]
+      },
+      chromeImages: {
+        files: [{
+          expand: true,
+          cwd: '<%= srcDirectory %>/images/optimised/',
+          src: [
+            '*.jpg',
+            '*.png',
+            '*.gif'
+          ],
+          dest: '<%= srcDirectory %>/extension/'
+        }]
       }
     },
     jshint: {
@@ -320,8 +334,8 @@ module.exports = function(grunt) {
     			expand: true,
     			cwd: '<%= srcDirectory %>/images/',
     			src: [
-    			  '**/*.jpg',
-    			  '!optimised/*.jpg'
+    			  '**/*.*',
+    			  '!optimised/*.*'
     			],
     			dest: '<%= srcDirectory %>/images/optimised/'
     		}]
@@ -352,8 +366,17 @@ module.exports = function(grunt) {
     // Bundle js, this runs regardless of whether you are changing scripts or not, since
     // you may not have created scripts from the sources before.
     'createScripts',
-    // Watch ALL less / js files for changes
-    utils.getConcurrentTask(cliOptions)
+    // Watch ALL less / js files for change
+    utils.getConcurrentTask()
+  ]);
+
+  grunt.registerTask('devChromeExtension', CONSTANTS.TASK_DESCRIPTIONS.devChromeExtension, [
+    'setup',
+    'createCss',
+    'createScripts',
+    'optimise-images',
+    'copy:chromeImages',
+    utils.getConcurrentTask()
   ]);
 
   // Production task, this is for when you want to create a production-ready build
@@ -410,7 +433,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('createScripts', CONSTANTS.TASK_DESCRIPTIONS.createScripts, [
     'clean:bundles',
-    'browserify:dev'
+    cliOptions['chrome-extension'] ? 'browserify:devChromeExtension' : 'browserify:dev'
   ]);
 
   // For testing

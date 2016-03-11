@@ -32,13 +32,14 @@ Install by doing the following (make sure you have `node` and `git` installed on
 	- `screenshots` takes screenshots of the specified URIs and stores them in `./grunt-temp/screenshots`.
 	- `perf` runs project through [Google PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/)
 	- `scratchpad`, for testing things
-	
+
 Use these flags to dictate what tasks run / which files are watched. All of these have default values of `false`. These are generally used when the tests take too long to execute or if you are just changing styles. They are also good for working with legacy projects (projects before these practices were followed) since they may not have tests for example (and therefore would fail a lot of things!):
 
 - `--no-tests`, removes tests from `dev` task.
 - `--no-scripts`, removes scripts from `dev` task (and since right now all we test are scripts, this applies `--no-tests` implicitly.
 - `--src`, specify the source directory, default is `./src`.
 - `--dest`, specifiy the destination directory, default is `./prod`.
+- `--chrome-extension`, specify if the project is a chrome extension, this will change the watched files / folders and output options.
 
 Some examples:
 
@@ -47,7 +48,7 @@ Some examples:
 - Output the build to a `dest` directory: `grunt build dest='/var/everyclick/tomcat/foo/'`
 
 
-In order to work the following folder structure / naming convention should be followed in a project, any changes will probably not work as intended so only change that if you know what you're doing: 
+In order to work the following folder structure / naming convention should be followed in a project, any changes will probably not work as intended so only change that if you know what you're doing:
 
      - src/
      	- styles/
@@ -69,7 +70,7 @@ In order to work the following folder structure / naming convention should be fo
      - prod/
      	- styles/
      		css/
-     		
+
 Generally we won't have files directly in `src`, instead it should be a symbolic link to your repository branch
 
 By default it will create `js` / `css` bundles from everything contained in the root asset directory (`/scripts` or `/styles/less`). Files beginning with a `_` will be ignored! So for example, following folder structure:
@@ -85,12 +86,12 @@ By default it will create `js` / `css` bundles from everything contained in the 
 				search-application.js
 				one-off-page.js
 				_illbeignored.js
-				_and-so-will-i.js				
-				
+				_and-so-will-i.js
+
 Would be compiled into (where # is the file hash):
 
 	src/
-		styles/	
+		styles/
 			css/
 				app.#.css
 				ghoul.#.css
@@ -99,7 +100,7 @@ Would be compiled into (where # is the file hash):
 					main-bundle.#.js
 					search-application-bundle.#.js
 					one-off-page-bundle.#.js
-				
+
 Scripts will always be placed in `bundles/` and styles will always be placed in `css/` in the output directory.
 
 Useful commands:
