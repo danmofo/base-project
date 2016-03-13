@@ -25,7 +25,8 @@ Install by doing the following (make sure you have `node` and `git` installed on
 - `npm install` to install the required dependencies
 - **(Optional)** `npm install -g http-server` to serve files if you aren't running Apache or Tomcat.
 - `grunt <command> --<flag>=<flag-value>`, where you can specify the following tasks:
-	- `dev` used when developing a project, watches less / js files for changes in the working directory
+	- `dev` used when developing a project, watches less / js files for changes in the working directory,
+  - `devChromeExtension` used when developing a chrome extension
 	- `build` produce a fully-optimized project build
 	- `optimise-images` optimises images in the source directory
 	- `test` runs project tests on their own
@@ -39,7 +40,6 @@ Use these flags to dictate what tasks run / which files are watched. All of thes
 - `--no-scripts`, removes scripts from `dev` task (and since right now all we test are scripts, this applies `--no-tests` implicitly.
 - `--src`, specify the source directory, default is `./src`.
 - `--dest`, specifiy the destination directory, default is `./prod`.
-- `--chrome-extension`, specify if the project is a chrome extension, this will change the watched files / folders and output options.
 
 Some examples:
 
@@ -117,6 +117,8 @@ See `package.json` for a full list.
 
 TODO:
 ---
+
+- Add UnCSS to the production build...
 - Normalise the file format used in `Gruntfile.js`, it's a mess.
 - CSS linter
 - Look for useful `postcss` plugins

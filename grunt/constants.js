@@ -25,10 +25,9 @@ module.exports = {
     validateFlags:          'Checks the command-line flags given are OK',
     validateTests:          'Checks each source file and makes sure it has a matching test file.',
     isProdReady:            'Lints, tests and runs website through page speed.',
-    devChromeExtension:     '',
-    scratchpad:             '',
-    _dummyTask:             '',
-    createChromeExtension:  ''
+    devChromeExtension:     'For developing a chrome extension',
+    scratchpad:             'For testing things',
+    createChromeExtension:  'Creates a chrome extension from src directory into extension.'
   },
 
   CLI_DEFAULTS: {
