@@ -12,7 +12,7 @@ Grunt is a task-runner, a task is essentially a function that does something. So
 
 Here's a diagram that tries to visualise it, the coloured blocks in the middle represent the tasks we use, you can easily see which steps each file type goes through.
 
-![Alt text](diagram.jpg?raw=true "title")
+![Grunt Diagram](misc/diagram.jpg?raw=true "Grunt diagram")
 
 For more information, the official documentation can be [found here](http://gruntjs.com/).
 

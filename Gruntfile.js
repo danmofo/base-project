@@ -460,9 +460,6 @@ module.exports = function(grunt) {
 	 grunt.log.writeln('hello world!');
   });
 
-  // Dummy task to use when we build task lists dynamically!
-  grunt.registerTask('_dummyTask', 'DONT USE THIS', function() { grunt.log.writeln('_dummyTask'); });
-
   // Validate the flag values (make sure folders exist and that folder structure looks usable)
   grunt.registerTask('validateFlags', CONSTANTS.TASK_DESCRIPTIONS.validateFlags, function() {
 

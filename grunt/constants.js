@@ -13,18 +13,22 @@ module.exports = {
 
   // Human readable task descriptions
   TASK_DESCRIPTIONS: {
-    help:               'Use grunt --help',
-    setup:              'Runs some setup tasks',
-    dev:                'For developing a project',
-    build:              'For a full production build',
-    screenshots:        'Take some screenshots for testing',
-    perf:               'Run some performance analysis',
-    'optimise-images':  'Optimise images',
-    createCss:          'Run CSS compilation steps',
-    createScripts:      'Run JS compilation steps',
-    validateFlags:      'Checks the command-line flags given are OK',
-    validateTests:      'Checks each source file and makes sure it has a matching test file.',
-    isProdReady:        'Lints, tests and runs website through page speed.'
+    help:                   'Use grunt --help',
+    setup:                  'Runs some setup tasks',
+    dev:                    'For developing a project',
+    build:                  'For a full production build',
+    screenshots:            'Take some screenshots for testing',
+    perf:                   'Run some performance analysis',
+    'optimise-images':      'Optimise images',
+    createCss:              'Run CSS compilation steps',
+    createScripts:          'Run JS compilation steps',
+    validateFlags:          'Checks the command-line flags given are OK',
+    validateTests:          'Checks each source file and makes sure it has a matching test file.',
+    isProdReady:            'Lints, tests and runs website through page speed.',
+    devChromeExtension:     '',
+    scratchpad:             '',
+    _dummyTask:             '',
+    createChromeExtension:  ''
   },
 
   CLI_DEFAULTS: {
