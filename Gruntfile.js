@@ -136,15 +136,12 @@ module.exports = function(grunt) {
         }]
       }
     },
-    less: {
+    sass: {
       dev: {
-        options: {
-          sourceMap: true
-        },
         files: [{
             expand: true,
-            cwd: '<%= srcDirectory %>/styles/less/',
-            src: ['*.less', '!_*.less'],
+            cwd: '<%= srcDirectory %>/styles/sass/',
+            src: ['*.scss', '!_*.scss'],
             dest: '<%= srcDirectory %>/styles/css/',
             ext: '.css'
         }]
@@ -152,8 +149,8 @@ module.exports = function(grunt) {
       prod: {
         files: [{
             expand: true,
-            cwd: '<%= srcDirectory %>/styles/less/',
-            src: ['*.less', '!_*.less'],
+            cwd: '<%= srcDirectory %>/styles/sass/',
+            src: ['*.scss', '!_*.scss'],
             dest: '<%= destDirectory %>/styles/css/',
             ext: '.css'
         }]
@@ -161,9 +158,9 @@ module.exports = function(grunt) {
     },
     watch: {
       devStyles: {
-        files: '<%= srcDirectory %>/styles/less/**/*.less',
+        files: '<%= srcDirectory %>/styles/sass/**/*.scss',
         tasks: [
-          'less:dev',
+          'sass:dev',
           'postcss:dev'
         ]
       },
@@ -407,8 +404,8 @@ module.exports = function(grunt) {
     'copy:prod',
     // Copy optimised images from optimised/ to / in the prod images folder
     'copy:optimised-images',
-    // Compile less files
-    'less:prod',
+    // Compile sass files
+    'sass:prod',
     // PostCSS css files
     'postcss:prod',
     // Bundle js
@@ -441,7 +438,7 @@ module.exports = function(grunt) {
   // Convenience task groups - this allows us to add more related processing in these blocks
   // without having to touch anything else in the build
   grunt.registerTask('createCss', CONSTANTS.TASK_DESCRIPTIONS.createCss, [
-    'less:dev',
+    'sass:dev',
     'postcss:dev'
   ]);
 

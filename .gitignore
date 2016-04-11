@@ -4,8 +4,10 @@ prod/
 .ignore-me
 fake_src/
 another_dist/
+.sass-cache/
+styles/css
 
-# Created by https://www.gitignore.io/api/osx,java,eclipse,node,vagrant,svn,bower,maven,sublimetext
+# Created by https://www.gitignore.io/api/osx,java,eclipse,node,vagrant,svn,bower,maven,sublimetext,windows
 ### OSX ###
 .DS_Store
 .AppleDouble

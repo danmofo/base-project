@@ -41,7 +41,7 @@ module.exports = {
 
   // Required folders in the src directory, generally just a styles / scripts / images will do, this
   // implies it's some sort of web project that this may work in
-  REQUIRED_FOLDERS: ['styles/less', 'scripts/', 'images/'],
+  REQUIRED_FOLDERS: ['styles/sass', 'scripts/', 'images/'],
 
   // File types / extensions we want to ignore
   FILE_BLACKLIST: [
