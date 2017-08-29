@@ -125,6 +125,11 @@ module.exports = function(grunt) {
         src: '<%= srcDirectory %>/scripts/main.js',
         dest: '<%= srcDirectory %>/extension/background.js'
       },
+      prodChromeExtension: {
+        options: {},
+        src: '<%= srcDirectory %>/scripts/main.js',
+        dest: '<%= destDirectory %>/extension/background.js'
+      },
       prod: {
         options: {},
         files: [{
@@ -237,6 +242,15 @@ module.exports = function(grunt) {
             dest: '<%= destDirectory %>/scripts/bundles/',
             ext: '.js'
         }]
+      },
+      prodChromeExtension: {
+        options: {
+          banner: CONSTANTS.SCRIPT_BANNER,
+          report: 'gzip'
+        },
+        // Rewrite the file in place
+        src: '<%= destDirectory %>/extension/background.js',
+        dest: '<%= destDirectory %>/extension/background.js'
       }
     },
     // Copy all files NOT copied by other tasks, if you copy stuff which is already copied
@@ -264,6 +278,21 @@ module.exports = function(grunt) {
     		  ],
     		  dest: '<%= destDirectory %>/images/'
     	  }]
+      },
+      prodChrome: {
+        files: [{
+          expand: true,
+          cwd: '<%= srcDirectory %>/images/optimised/',
+          src: [
+            '*.jpg',
+            '*.png',
+            '*.gif'
+          ],
+          dest: '<%= destDirectory %>/extension/'
+        }, {
+          src: '<%= srcDirectory %>/extension/manifest.json',
+          dest: '<%= destDirectory %>/extension/manifest.json',
+        }]
       },
       chrome: {
         files: [{
@@ -388,6 +417,16 @@ module.exports = function(grunt) {
     'optimise-images',
     'copy:chrome',
     'concurrent:watchChromeExtension'
+  ]);
+
+  grunt.registerTask('prodChromeExtension', CONSTANTS.TASK_DESCRIPTIONS.prodChromeExtension, [
+    'setup',
+    'clean:prod',
+    'clean:bundles',
+    'optimise-images',
+    'copy:prodChrome',
+    'browserify:prodChromeExtension',
+    'uglify:prodChromeExtension'
   ]);
 
   // Production task, this is for when you want to create a production-ready build

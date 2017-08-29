@@ -15,7 +15,7 @@ module.exports = {
   TASK_DESCRIPTIONS: {
     help:                   'Use grunt --help',
     setup:                  'Runs some setup tasks',
-    dev:                    'For developing a project',
+    dev:                    'For developing a web project',
     build:                  'For a full production build',
     screenshots:            'Take some screenshots for testing',
     perf:                   'Run some performance analysis',
@@ -25,9 +25,10 @@ module.exports = {
     validateFlags:          'Checks the command-line flags given are OK',
     validateTests:          'Checks each source file and makes sure it has a matching test file.',
     isProdReady:            'Lints, tests and runs website through page speed.',
-    devChromeExtension:     'For developing a chrome extension',
+    devChromeExtension:     'For developing a Chrome Extension',
+    prodChromeExtension:    'Creates a production-read Chrome extension, ready for deployment on the Chrome Webstore.',
     scratchpad:             'For testing things',
-    createChromeExtension:  'Creates a chrome extension from src directory into extension.'
+    createChromeExtension:  'Creates a chrome extension from src directory into extension.',
   },
 
   CLI_DEFAULTS: {
